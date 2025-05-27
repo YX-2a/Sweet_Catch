@@ -7,15 +7,26 @@ class Interface (QtWidgets.QWidget):
 		self.x1, self.y1, self.x2, self.y2 = 200,300,100,100
 		self.gen_celin = [i for i in range (0, 401, 50)]
 		self.fall = None
+		self.inter_scr = 1
 		
 	def make (self):
-		self.scene = QtWidgets.QGraphicsScene (0,0,self.width(),self.height())	
-		self.view = QtWidgets.QGraphicsView (parent = self,scene = self.scene)		
+		self.vbox = QtWidgets.QVBoxLayout (self)
+		
+		self.counter_score = QtWidgets.QLCDNumber ()
+		self.num = 0
+		self.counter_score.display (str(self.num))
+		
+		self.scene = QtWidgets.QGraphicsScene (0,0,500,400)	
+		self.view = QtWidgets.QGraphicsView (scene = self.scene)		
 		
 		self.squr = self.scene.addRect(self.x1, self.y1, self.x2, self.y2, QtGui.QPen(QtGui.QColor(255, 0, 0)), QtGui.QBrush(QtGui.QColor(255, 0, 0)))
+		
+		self.vbox.addWidget (self.counter_score)
+		self.vbox.addWidget (self.view)
+		
 		self.timer = QtCore.QTimer()
 		self.tee = 0
-		self.timer.setInterval (950 - self.tee)
+		self.timer.setInterval (500 - self.tee)
 		self.timer.timeout.connect (self.gen)
 		
 		self.timer.start ()
@@ -46,32 +57,49 @@ class Interface (QtWidgets.QWidget):
 		if self.fall.collidesWithItem(self.squr):
 			self.scene.removeItem (self.fall)
 			self.fall = None
+			self.num = self.num + self.inter_scr
+			print (self.num)
 			
-			if self.tee == 800:
+			self.counter_score.display (str(self.num))
+			self.counter_score.update ()
+			
+			if self.tee == 430:
 				self.tee = self.tee
 				self.timer.stop()
-				self.timer.setInterval (1000 - self.tee)
+				self.timer.setInterval (500 - self.tee)
 				self.timer.start()
 
 			else:
-				self.tee += 100
+				self.tee += 10
+				self.inter_scr += 1
 				self.timer.stop()
-				self.timer.setInterval (1000 - self.tee)
+				self.timer.setInterval (500 - self.tee)
 				self.timer.start()	
 				
-		elif self.fall.y() == self.height() - 50 :
+		elif self.fall.y() == self.scene.height() - 50 :
 			self.scene.removeItem (self.fall)
 			self.fall = None
-	
-			if self.tee == 800:
+			self.num = self.num - self.inter_scr
+			
+			if self.num < 0:
+				self.num = 0
+				self.counter_score.display (str(self.num))
+				self.counter_score.update ()
+			
+			else:
+				self.counter_score.display (str(self.num))
+				self.counter_score.update ()
+			
+			if self.tee == 430:
 				self.tee = self.tee
 				self.timer.stop()
-				self.timer.setInterval (1000 - self.tee)
+				self.timer.setInterval (500 - self.tee)
 				self.timer.start()
 			else:
-				self.tee += 100
+				self.tee += 10
+				self.inter_scr += 1
 				self.timer.stop()
-				self.timer.setInterval (1000 - self.tee)
+				self.timer.setInterval (500 - self.tee)
 				self.timer.start()							
 		else:
 			self.fall.moveBy (0,50)
