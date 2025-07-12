@@ -4,7 +4,6 @@ from sys import exit as Qkill
 
 if __name__ == "__main__":
 	app = QApplication ([])
-	ecran = app.primaryScreen ()
 	win = Window ()
 	win.show()
 	Qkill(app.exec()) 
