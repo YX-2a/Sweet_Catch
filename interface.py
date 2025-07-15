@@ -7,20 +7,25 @@ class Interface (QtWidgets.QWidget):
 		self.x1, self.y1, self.x2, self.y2 = 200,300,100,100
 		self.fall_coords = [i for i in range (0, 401, 50)]
 		self.fall = None
+		self.bg_color = QtGui.QColor(0, 181, 226)
 		self.squr_color = QtGui.QColor(255, 0, 0)
-		self.fall_color = QtGui.QColor(0, 0, 255)
+		self.fall_color = QtGui.QColor(0, 255, 0)
 		self.score_boost = 0
 		self.current_intv = 50
 		self.current_key = None
-				
+		self.score_num = 0
+		self.display_text = f"<font size=5>Score : {self.score_num}</font>"
+		
 	def make (self):
 		self.vbox = QtWidgets.QVBoxLayout (self)
 		
-		self.score = QtWidgets.QLabel ("Score : 0")
-		self.score_num = 0
-		self.score.setText (f"Score : {self.score_num}")
+		self.score = QtWidgets.QLabel ()
+		self.score.setText (self.display_text)
+		self.score.setTextFormat (QtCore.Qt.RichText)
+		self.score.setAlignment (QtCore.Qt.AlignHCenter)
 		
-		self.scene = QtWidgets.QGraphicsScene (0,0,500,400)	
+		self.scene = QtWidgets.QGraphicsScene (0,0,500,400)
+		self.scene.setBackgroundBrush(QtGui.QBrush(self.bg_color))
 		self.view = QtWidgets.QGraphicsView (scene = self.scene)		
 		
 		self.squr = self.scene.addRect(self.x1, self.y1, self.x2, self.y2, QtGui.QPen(self.squr_color), QtGui.QBrush(self.squr_color))
@@ -49,21 +54,23 @@ class Interface (QtWidgets.QWidget):
 		self.current_key = None
 	
 	def player_move (self):
-		if self.current_key == QtCore.Qt.Key_Q or self.current_key == QtCore.Qt.Key_A:
-			if self.squr.x() == -200:
-				self.squr.moveBy (0,0)
-			else:
-				self.squr.moveBy (-5,0)
-				
-		elif self.current_key == QtCore.Qt.Key_D:
-			if self.squr.x() == 200:
-				self.squr.moveBy (0,0)
-			else:
-				self.squr.moveBy (5,0)
+		squr_x = self.x1
 		
-		else:
-			self.squr.moveBy (0,0)
-				
+		if (self.current_key == QtCore.Qt.Key_Q or self.current_key == QtCore.Qt.Key_A) and squr_x > -((self.scene.width() - self.x2)//2):
+			squr_x -= 10
+
+		elif self.current_key == QtCore.Qt.Key_D and squr_x < ((self.scene.width() - self.x2)//2):
+			squr_x += 10
+		
+		self.squr.setPos(squr_x, 0)
+		self.x1 = squr_x
+		
+	def show_score (self, negative = 1):
+		self.score_num = self.score_num + (self.score_boost) * negative
+		self.display_text = f"<font size=5>Score : {self.score_num}</font>"
+		self.score.setText (self.display_text)
+		self.score.update ()
+		
 	def fall_move (self):
 		self.speed = 5
 		if self.fall == None :
@@ -74,10 +81,7 @@ class Interface (QtWidgets.QWidget):
 			self.scene.removeItem (self.fall)
 			self.fall = None
 			self.score_boost += 1
-			self.score_num = self.score_num + self.score_boost
-			
-			self.score.setText (f"Score : {self.score_num}")
-			self.score.update ()
+			self.show_score()
 			
 			if self.current_intv > 15:
 				self.current_intv = self.current_intv - self.speed
@@ -85,15 +89,11 @@ class Interface (QtWidgets.QWidget):
 			
 		elif self.fall.y() == self.scene.height() - 50 :
 			self.scene.removeItem (self.fall)
-			self.fall = None ## NULL it
-			self.score_num = self.score_num - self.score_boost
-			
-			self.score.setText (f"Score : {self.score_num}")
-			self.score.update ()
+			self.fall = None 
+			self.show_score(-1)
 			
 			if self.current_intv < 45:
 				self.current_intv = self.current_intv + self.speed
 				self.timer.setInterval (self.current_intv)
-				
 		else:
-			self.fall.moveBy (0,5)
+			self.fall.setPos (0,self.fall.pos().y() + 5)
