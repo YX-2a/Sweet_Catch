@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QMainWindow
 from interface import Interface
+from menu import Menu
 
 class Window (QMainWindow):
 	def __init__ (self):
@@ -8,3 +9,6 @@ class Window (QMainWindow):
 		
 		inter = Interface()
 		self.setCentralWidget (inter.make())
+		
+		menu = Menu(inter, self)
+		self.setMenuBar (menu.make())
