@@ -4,15 +4,16 @@ from random import choice
 class Interface (QtWidgets.QWidget):
 	def __init__ (self):
 		super().__init__()
-		self.x1, self.y1, self.x2, self.y2 = 200,300,100,100
+		self.squr_x = 0
+		self.squr_y = 300
 		self.fall_coords = [i for i in range (0, 401, 50)]
 		self.fall = None
 		self.vbox = None
 		self.stop_box = None
 		
 		self.bg_color = QtGui.QColor(0, 181, 226)
-		self.squr_color = QtGui.QColor(255, 0, 0)
-		self.fall_color = QtGui.QColor(0, 255, 0)
+		self.squr_img = QtGui.QImage ("./textures/basket.png")
+		self.fall_img = QtGui.QImage ("./textures/apple.png")
 		self.stop_color = QtGui.QColor (127, 127, 127, 170)
 		
 		self.score_boost = 0
@@ -48,9 +49,11 @@ class Interface (QtWidgets.QWidget):
 		
 		self.scene = QtWidgets.QGraphicsScene (0,0,500,400)
 		self.scene.setBackgroundBrush(QtGui.QBrush(self.bg_color))
-		self.view = QtWidgets.QGraphicsView (scene = self.scene)		
+		self.view = QtWidgets.QGraphicsView (scene = self.scene)	
 		
-		self.squr = self.scene.addRect(self.x1, self.y1, self.x2, self.y2, QtGui.QPen(self.squr_color), QtGui.QBrush(self.squr_color))
+		self.squr = self.scene.addPixmap(QtGui.QPixmap(self.squr_img))
+		self.squr.setShapeMode(QtWidgets.QGraphicsPixmapItem.BoundingRectShape) 	
+		self.squr.setPos (self.squr_x,self.squr_y)
 		
 		self.vbox.addWidget (self.score)
 		self.vbox.addWidget (self.view)
@@ -61,18 +64,15 @@ class Interface (QtWidgets.QWidget):
 	def keyReleaseEvent (self, e):
 		self.current_key = None
 	
-	def player_move (self):
-		squr_x = self.x1
-		
-		if (self.current_key == QtCore.Qt.Key_Q or self.current_key == QtCore.Qt.Key_A) and squr_x > -((self.scene.width() - self.x2)//2):
-			squr_x -= 10
+	def player_move (self):		
+		if (self.current_key == QtCore.Qt.Key_Q or self.current_key == QtCore.Qt.Key_A) and self.squr_x > 0:
+			self.squr_x -= 10
 
-		elif self.current_key == QtCore.Qt.Key_D and squr_x < ((self.scene.width() - self.x2)//2):
-			squr_x += 10
+		elif self.current_key == QtCore.Qt.Key_D and self.squr_x < (self.scene.width() - 100):
+			self.squr_x += 10
 		
-		self.squr.setPos(squr_x, 0)
-		self.x1 = squr_x
-		
+		self.squr.setPos(self.squr_x, self.squr_y)
+				
 	def show_score (self, negative = 1):
 		self.score_num = self.score_num + (self.score_boost) * negative
 		self.display_text = f"<font size=5>Score : {self.score_num}</font>"
@@ -82,9 +82,11 @@ class Interface (QtWidgets.QWidget):
 	def fall_move (self):
 		self.speed = 5
 		if self.fall == None :
-			self.fall_x1,self.fall_y1,self.fall_x2,self.fall_y2 = choice (self.fall_coords),-50,50,50
-			self.fall = self.scene.addRect(self.fall_x1,self.fall_y1,self.fall_x2,self.fall_y2, QtGui.QPen(self.fall_color), QtGui.QBrush(self.fall_color))
-		
+			self.fall_x = choice (self.fall_coords)
+			self.fall = self.scene.addPixmap(QtGui.QPixmap(self.fall_img))
+			self.fall.setShapeMode(QtWidgets.QGraphicsPixmapItem.BoundingRectShape)
+			self.fall.setPos (self.fall_x,0)
+			
 		elif self.fall.collidesWithItem(self.squr):
 			self.scene.removeItem (self.fall)
 			self.fall = None
@@ -95,7 +97,7 @@ class Interface (QtWidgets.QWidget):
 				self.current_intv = self.current_intv - self.speed
 				self.fall_timer.setInterval (self.current_intv)
 			
-		elif self.fall.y() == self.scene.height():
+		elif self.fall.y() == self.scene.height() - 25:
 			self.scene.removeItem (self.fall)
 			self.fall = None
 			self.show_score(negative = -1)
@@ -104,7 +106,7 @@ class Interface (QtWidgets.QWidget):
 				self.current_intv = self.current_intv + self.speed
 				self.fall_timer.setInterval (self.current_intv)
 		else:
-			self.fall.setPos (0,self.fall.pos().y() + 5)
+			self.fall.setPos (self.fall_x,self.fall.pos().y() + 5)
 			
 	def stop_game (self):
 		self.fall_timer.stop()
@@ -133,8 +135,13 @@ class Interface (QtWidgets.QWidget):
 		self.fall = None
 		
 		self.scene.removeItem (self.squr)
-		self.x1, self.y1, self.x2, self.y2 = 200,300,100,100
-		self.squr = self.scene.addRect(self.x1, self.y1, self.x2, self.y2, QtGui.QPen(self.squr_color), QtGui.QBrush(self.squr_color))
+		
+		self.squr_x = 0
+		self.squr_y = 300
+		
+		self.squr = self.scene.addPixmap(QtGui.QPixmap(self.squr_img))
+		self.squr.setShapeMode(QtWidgets.QGraphicsPixmapItem.BoundingRectShape) 	
+		self.squr.setPos (self.squr_x,self.squr_y)
 			
 		self.score_boost = 0
 		self.score_num = 0
