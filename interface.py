@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from game_objects import Player, Fruit
+from game_objects import Player, Apple, Lemon
 from random import choice
 
 class Interface (QtWidgets.QWidget):
@@ -8,14 +8,15 @@ class Interface (QtWidgets.QWidget):
 		self.player_x = 0
 		self.player_y = 288
 		
-		self.fruit_coords = [i for i in range (0, 385, 50)]
+		self.fruit_coords = [i for i in range (0, 480, 48)]
 		self.fruit = None
 		self.vbox = None
 		self.stop_box = None
 		
 		self.bg_color = QtGui.QColor(0, 181, 226)
 		self.player_img = QtGui.QImage ("./textures/basket.png")
-		self.fruit_img = QtGui.QImage ("./textures/apple.png")
+		self.apple_img = QtGui.QImage ("./textures/apple.png")
+		self.lemon_img = QtGui.QImage ("./textures/lemon.png")
 		self.stop_color = QtGui.QColor (127, 127, 127, 170)
 		
 		self.fruit_speed = None
@@ -70,15 +71,13 @@ class Interface (QtWidgets.QWidget):
 	def game_tick (self):
 		if (self.current_key == QtCore.Qt.Key_Q or self.current_key == QtCore.Qt.Key_A) and self.player_x > 0:
 			self.player_x -= self.player.speed
-
 		elif self.current_key == QtCore.Qt.Key_D and self.player_x < (self.scene.width() - 96):
 			self.player_x += self.player.speed
-		
 		self.player.setX(self.player_x)
 		
 		if self.fruit == None :
 			self.fruit_x = choice (self.fruit_coords)
-			self.fruit = Fruit (self.fruit_img, (48,48))
+			self.fruit = choice([Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48))])
 			self.scene.addItem (self.fruit)
 			self.fruit.setX (self.fruit_x)
 			self.fruit.setY (-48)

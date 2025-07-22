@@ -43,7 +43,6 @@ class Player (Game_Object):
 class Fruit (Game_Object):
 	def __init__ (self, img, sizeXY):
 		super().__init__( img, sizeXY )
-		self.score_add = 10
 		self.speed = 2
 	
 	def shape (self):
@@ -51,3 +50,14 @@ class Fruit (Game_Object):
 		path.addRect(0, 0, self.w, self.h)
 		
 		return path
+
+class Apple (Fruit):
+	def __init__ (self, img, sizeXY):
+		super().__init__( img, sizeXY )
+		self.score_add = 10
+	
+class Lemon (Fruit):
+	def __init__ (self, img, sizeXY):
+		super().__init__( img, sizeXY )
+		self.score_add = -10
+	
