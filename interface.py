@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from game_objects import Player, Apple, Lemon
+from game_objects import Player, Apple, Lemon, Leaf
 from random import choice
 
 class Interface (QtWidgets.QWidget):
@@ -8,8 +8,8 @@ class Interface (QtWidgets.QWidget):
 		self.player_x = 0
 		self.player_y = 288
 		
-		self.fruit_coords = [i for i in range (0, 480, 48)]
-		self.fruit = None
+		self.falling_obj_coords = [i for i in range (0, 480, 48)]
+		self.falling_obj = None
 		self.vbox = None
 		self.stop_box = None
 		
@@ -17,9 +17,10 @@ class Interface (QtWidgets.QWidget):
 		self.player_img = QtGui.QImage ("./textures/basket.png")
 		self.apple_img = QtGui.QImage ("./textures/apple.png")
 		self.lemon_img = QtGui.QImage ("./textures/lemon.png")
+		self.leaf_img = QtGui.QImage ("./textures/leaf.png")
 		self.stop_color = QtGui.QColor (127, 127, 127, 170)
 		
-		self.fruit_speed = None
+		self.falling_obj_speed = None
 		self.current_key = None
 		self.score_num = 0
 		self.display_text = f"<font size=5>Score : {self.score_num}</font>"
@@ -75,33 +76,33 @@ class Interface (QtWidgets.QWidget):
 			self.player_x += self.player.speed
 		self.player.setX(self.player_x)
 		
-		if self.fruit == None :
-			self.fruit_x = choice (self.fruit_coords)
-			self.fruit = choice([Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48))])
-			self.scene.addItem (self.fruit)
-			self.fruit.setX (self.fruit_x)
-			self.fruit.setY (-48)
+		if self.falling_obj == None :
+			self.falling_obj_x = choice (self.falling_obj_coords)
+			self.falling_obj = choice([Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48)), Leaf(self.leaf_img, (48,48))])
+			self.scene.addItem (self.falling_obj)
+			self.falling_obj.setX (self.falling_obj_x)
+			self.falling_obj.setY (-48)
 			
-			if self.fruit_speed == None:
-				self.fruit_speed = self.fruit.speed
+			if self.falling_obj_speed == None:
+				self.falling_obj_speed = self.falling_obj.speed
 			
-		elif self.fruit.collidesWithItem(self.player):
-			self.show_score(self.fruit.score_add)
-			self.scene.removeItem (self.fruit)
-			self.fruit = None
+		elif self.falling_obj.collidesWithItem(self.player):
+			self.show_score(self.falling_obj.score_add)
+			self.scene.removeItem (self.falling_obj)
+			self.falling_obj = None
 			
-			if self.fruit_speed < 8:
-				self.fruit_speed += 2
+			if self.falling_obj_speed < 8:
+				self.falling_obj_speed += 2
 			
-		elif self.fruit.pos().y() >= self.scene.height():
-			self.scene.removeItem (self.fruit)
-			self.fruit = None
+		elif self.falling_obj.pos().y() >= self.scene.height():
+			self.scene.removeItem (self.falling_obj)
+			self.falling_obj = None
 			self.show_score(0)
 			
-			if self.fruit_speed > 2:
-				self.fruit_speed -= 2
+			if self.falling_obj_speed > 2:
+				self.falling_obj_speed -= 2
 		else:
-			self.fruit.setY (self.fruit.pos().y() + self.fruit_speed)
+			self.falling_obj.setY (self.falling_obj.pos().y() + self.falling_obj_speed)
 			
 	def stop_game (self):
 		self.game_timer.stop()
@@ -120,14 +121,14 @@ class Interface (QtWidgets.QWidget):
 			self.scene.removeItem (self.stop_box)
 			self.stop_box = None
 		
-		self.scene.removeItem (self.fruit)
-		self.fruit = None
+		self.scene.removeItem (self.falling_obj)
+		self.falling_obj = None
 		
 		self.player_x = 0
 		self.player.setPos (self.player_x, self.player_y)
 		
 		self.score_num = 0
 		self.show_score(0)
-		self.fruit_speed = None
+		self.falling_obj_speed = None
 		
 		self.start_game()
