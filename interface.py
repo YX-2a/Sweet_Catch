@@ -1,17 +1,12 @@
 from PySide6 import QtWidgets, QtCore, QtGui
 from game_objects import Player, Apple, Lemon, Leaf
-from random import choice
+from random import choice, randint
 
 class Interface (QtWidgets.QWidget):
 	def __init__ (self):
 		super().__init__()
 		self.player_x = 0
 		self.player_y = 288
-		
-		self.falling_obj_coords = [i for i in range (0, 480, 48)]
-		self.falling_obj = None
-		self.vbox = None
-		self.stop_box = None
 		
 		self.bg_color = QtGui.QColor(0, 181, 226)
 		self.player_img = QtGui.QImage ("./textures/basket.png")
@@ -20,7 +15,10 @@ class Interface (QtWidgets.QWidget):
 		self.leaf_img = QtGui.QImage ("./textures/leaf.png")
 		self.stop_color = QtGui.QColor (127, 127, 127, 170)
 		
-		self.falling_obj_speed = None
+		self.falling_obj_coords = [i for i in range (0, 480, 48)]
+		self.falling_objs = [None for i in range(5)]
+		self.stop_box = None
+		
 		self.current_key = None
 		self.score_num = 0
 		self.display_text = f"<font size=5>Score : {self.score_num}</font>"
@@ -76,33 +74,34 @@ class Interface (QtWidgets.QWidget):
 			self.player_x += self.player.speed
 		self.player.setX(self.player_x)
 		
-		if self.falling_obj == None :
-			self.falling_obj_x = choice (self.falling_obj_coords)
-			self.falling_obj = choice([Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48)), Leaf(self.leaf_img, (48,48))])
-			self.scene.addItem (self.falling_obj)
-			self.falling_obj.setX (self.falling_obj_x)
-			self.falling_obj.setY (-48)
+		for index, falling_obj in enumerate(self.falling_objs):
+			fallen_obj = self.falling_obj_tick(falling_obj)
+			self.falling_objs[index] = fallen_obj
 			
-			if self.falling_obj_speed == None:
-				self.falling_obj_speed = self.falling_obj.speed
+	def falling_obj_tick (self, falling_obj):
+		if falling_obj == None:
+			falling_obj = choice([Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48)), Leaf(self.leaf_img, (48,48))])
+			falling_obj_x = choice (self.falling_obj_coords)
+			self.scene.addItem (falling_obj)
+			falling_obj.setX (falling_obj_x)
+			falling_obj.setY (-48 - randint (0, 30))
+			return falling_obj
 			
-		elif self.falling_obj.collidesWithItem(self.player):
-			self.show_score(self.falling_obj.score_add)
-			self.scene.removeItem (self.falling_obj)
-			self.falling_obj = None
+		elif falling_obj.collidesWithItem(self.player):
+			self.show_score(falling_obj.score_add)
+			self.scene.removeItem (falling_obj)
+			falling_obj = None
+			return falling_obj
 			
-			if self.falling_obj_speed < 8:
-				self.falling_obj_speed += 2
-			
-		elif self.falling_obj.pos().y() >= self.scene.height():
-			self.scene.removeItem (self.falling_obj)
-			self.falling_obj = None
+		elif falling_obj.pos().y() >= self.scene.height():
+			self.scene.removeItem (falling_obj)
+			falling_obj = None
 			self.show_score(0)
+			return falling_obj
 			
-			if self.falling_obj_speed > 2:
-				self.falling_obj_speed -= 2
 		else:
-			self.falling_obj.setY (self.falling_obj.pos().y() + self.falling_obj_speed)
+			falling_obj.setY (falling_obj.pos().y() + falling_obj.speed)
+			return falling_obj
 			
 	def stop_game (self):
 		self.game_timer.stop()
@@ -121,14 +120,14 @@ class Interface (QtWidgets.QWidget):
 			self.scene.removeItem (self.stop_box)
 			self.stop_box = None
 		
-		self.scene.removeItem (self.falling_obj)
-		self.falling_obj = None
+		for i, obj in enumerate(self.falling_objs):
+			self.scene.removeItem (obj)
+			self.falling_objs[i] = None
 		
 		self.player_x = 0
 		self.player.setPos (self.player_x, self.player_y)
 		
 		self.score_num = 0
 		self.show_score(0)
-		self.falling_obj_speed = None
 		
 		self.start_game()
