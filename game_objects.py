@@ -73,4 +73,27 @@ class Leaf (Faller):
 	def __init__ (self, img, sizeXY):
 		super().__init__( img, sizeXY )
 		self.type = "Leaf"
-		self.score_add = 0
+		
+class Special (Faller):
+	def __init__ (self, img, sizeXY):
+		super().__init__( img, sizeXY )
+		self.type = "Special"
+		self.sub_type = "Generic"
+		self.speed = 5
+	
+	def __str__ (self):
+		return f"{self.type} [{self.sub_type}] Object : \nheight: {self.height}\nwidth: {self.width}\nx: {self.x()}\ny: {self.y()}\nspeed: {self.speed}\nscore add: {self.score_add}\n"
+		
+	def __repr__ (self):
+		return self.__str__()
+	
+class Pear (Special):
+	def __init__ (self, img, sizeXY):
+		super().__init__( img, sizeXY )
+		self.sub_type = "Pear"
+		
+class Citrus (Special):
+	def __init__ (self, img, sizeXY):
+		super().__init__( img, sizeXY )
+		self.sub_type = "Citrus"
+		

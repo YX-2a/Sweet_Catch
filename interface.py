@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from game_objects import Player, Apple, Lemon, Leaf
+from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus
 from random import choice, randint
 
 class Interface (QtWidgets.QWidget):
@@ -8,16 +8,21 @@ class Interface (QtWidgets.QWidget):
 		self.player_x = 0
 		self.player_y = 288
 		
-		self.bg_color = QtGui.QColor(0, 181, 226)
+		self.blu_bg_color = QtGui.QColor(0, 181, 226)
+		self.red_bg_color = QtGui.QColor(255, 0, 0)
+		self.yel_bg_color = QtGui.QColor(255, 255, 0)
 		self.player_img = QtGui.QImage ("./textures/basket.png")
 		self.apple_img = QtGui.QImage ("./textures/apple.png")
 		self.lemon_img = QtGui.QImage ("./textures/lemon.png")
 		self.leaf_img = QtGui.QImage ("./textures/leaf.png")
+		self.special_img = QtGui.QImage ("./textures/special.png")
 		self.stop_color = QtGui.QColor (127, 127, 127, 170)
 		
 		self.falling_obj_coords = [i for i in range (0, 480, 48)]
 		self.falling_objs = [None for i in range(5)]
 		self.stop_box = None
+		self.special_state = False
+		self.special_type = None
 		
 		self.current_key = None
 		self.score_num = 0
@@ -29,6 +34,11 @@ class Interface (QtWidgets.QWidget):
 		self.game_timer = QtCore.QTimer()
 		self.game_timer.setInterval (16)
 		self.game_timer.timeout.connect (self.game_tick)
+		
+		self.special_timer = QtCore.QTimer()
+		self.special_timer.setInterval (10000)
+		self.special_timer.timeout.connect (self.special_efx_stop)
+		self.special_timer.setSingleShot (True)
 		
 		self.start_game()
 		
@@ -43,7 +53,7 @@ class Interface (QtWidgets.QWidget):
 		self.score.setAlignment (QtCore.Qt.AlignHCenter)
 		
 		self.scene = QtWidgets.QGraphicsScene (0,0,480,384)
-		self.scene.setBackgroundBrush(QtGui.QBrush(self.bg_color))
+		self.scene.setBackgroundBrush(QtGui.QBrush(self.blu_bg_color))
 		self.view = QtWidgets.QGraphicsView (scene = self.scene)
 		self.view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 		
@@ -80,14 +90,32 @@ class Interface (QtWidgets.QWidget):
 			
 	def falling_obj_tick (self, falling_obj):
 		if falling_obj == None:
-			falling_obj = choice([Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48)), Leaf(self.leaf_img, (48,48))])
+			falling_objs_classes = [Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48)), Leaf(self.leaf_img, (48,48))] 
+			falling_obj = choice(falling_objs_classes)
+			
+			if self.score_num % 100 == 0 and self.score_num > 0 and self.special_state == False:
+				falling_obj = choice([Pear(self.special_img, (48,48)), Citrus(self.special_img, (48,48))])
+			
 			falling_obj_x = choice (self.falling_obj_coords)
 			self.scene.addItem (falling_obj)
 			falling_obj.setX (falling_obj_x)
-			falling_obj.setY (-48 - randint (0, 30))
-			return falling_obj
+			falling_obj.setY (-48 - randint (0, 48))
+			if self.special_state:
+				self.special_efx_tick (falling_obj)
+				return falling_obj
+			else:
+				return falling_obj
 			
 		elif falling_obj.collidesWithItem(self.player):
+			if falling_obj.type == "Special": 
+				self.special_type = falling_obj.sub_type
+				self.special_state = True
+				self.special_timer.start()
+				if self.special_type == "Citrus":
+					self.scene.setBackgroundBrush(QtGui.QBrush(self.yel_bg_color))
+				elif self.special_type == "Pear":
+					self.scene.setBackgroundBrush(QtGui.QBrush(self.red_bg_color))
+				
 			self.show_score(falling_obj.score_add)
 			self.scene.removeItem (falling_obj)
 			falling_obj = None
@@ -102,7 +130,29 @@ class Interface (QtWidgets.QWidget):
 		else:
 			falling_obj.setY (falling_obj.pos().y() + falling_obj.speed)
 			return falling_obj
-			
+	
+	def special_efx_tick (self, obj):
+		if self.special_type == "Pear":
+			if obj.type == "Apple":
+				obj.setScoreAdd (50)
+				obj.setSpeed (6)
+			elif obj.type == "Lemon":
+				obj.setScoreAdd (0)
+				obj.setSpeed (3)
+		elif self.special_type == "Citrus":
+			if obj.type == "Apple":
+				obj.setScoreAdd (0)
+				obj.setSpeed (3)
+			elif obj.type == "Lemon":
+				obj.setScoreAdd (-50)
+				obj.setSpeed (6)
+	
+	def special_efx_stop (self):
+		self.special_type = None
+		self.special_state = False	
+		self.bg_color = QtGui.QColor(0, 181, 226)
+		self.scene.setBackgroundBrush(QtGui.QBrush(self.bg_color))
+	
 	def stop_game (self):
 		self.game_timer.stop()
 		if self.stop_box == None:
@@ -124,6 +174,10 @@ class Interface (QtWidgets.QWidget):
 			self.scene.removeItem (obj)
 			self.falling_objs[i] = None
 		
+		if self.special_timer.isActive():
+			self.special_timer.stop()
+			self.special_efx_stop ()
+			
 		self.player_x = 0
 		self.player.setPos (self.player_x, self.player_y)
 		

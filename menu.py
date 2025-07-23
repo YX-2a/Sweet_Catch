@@ -41,7 +41,7 @@ class Menu (QtWidgets.QMenuBar):
 		self.pause()
 		msg_box = QtWidgets.QMessageBox(self.parent)
 		msg_box.setWindowTitle ("About")
-		msg_box.setText ("# Yet To Be Named\n\nJust a Prototype for now.")
+		msg_box.setText ("# Sweet Catch !!\n\nJust a Beta for now.")
 		msg_box.setTextFormat (QtCore.Qt.MarkdownText)
 		msg_box.exec()
 		self.unpause()
