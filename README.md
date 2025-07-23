@@ -1,4 +1,5 @@
-# Fallers
+# Sweet Catch !
 
-just a game made in Qt
-(just a prototype right now)
+A Game About Catching Fruits and Just Getting To High Score
+
+Currently a BETA

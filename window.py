@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import Qt, QTimer, QEvent
-from PySide6.QtGui import QIcon, QImage, QPixmap
+from PySide6.QtGui import QIcon
 from interface import Interface
 from menu import Menu
 
@@ -8,6 +8,7 @@ class Window (QMainWindow):
 	def __init__ (self):
 		super().__init__(parent = None, flags = Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint | Qt.WindowTitleHint)
 		self.setWindowTitle ("Sweet Catch !")
+		self.setWindowIcon (QIcon("./textures/leaf.png"))
 		self.setFixedSize(500, 466) 
 		
 		self.inter = Interface()
