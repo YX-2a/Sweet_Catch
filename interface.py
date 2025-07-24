@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus
+from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound
 from random import choice, randint
 
 class Interface (QtWidgets.QWidget):
@@ -8,6 +8,8 @@ class Interface (QtWidgets.QWidget):
 		self.player_x = 0
 		self.player_y = 288
 		
+		self.stop_sound = Game_Sound("./sounds/pause_game.wav")
+		self.start_sound = Game_Sound("./sounds/new_game.wav")
 		self.blu_bg_color = QtGui.QColor(0, 181, 226)
 		self.red_bg_color = QtGui.QColor(255, 0, 0)
 		self.yel_bg_color = QtGui.QColor(255, 255, 0)
@@ -20,6 +22,7 @@ class Interface (QtWidgets.QWidget):
 		
 		self.falling_obj_coords = [i for i in range (0, 480, 48)]
 		self.falling_objs = [None for i in range(5)]
+		self.falling_obj_sound = None
 		self.stop_box = None
 		self.special_state = False
 		self.special_type = None
@@ -115,7 +118,12 @@ class Interface (QtWidgets.QWidget):
 					self.scene.setBackgroundBrush(QtGui.QBrush(self.yel_bg_color))
 				elif self.special_type == "Pear":
 					self.scene.setBackgroundBrush(QtGui.QBrush(self.red_bg_color))
+			
+			if self.falling_obj_sound:
+				self.falling_obj_sound.stop()
 				
+			self.falling_obj_sound = falling_obj.sound 
+			self.falling_obj_sound.play()
 			self.show_score(falling_obj.score_add)
 			self.scene.removeItem (falling_obj)
 			falling_obj = None
@@ -136,16 +144,21 @@ class Interface (QtWidgets.QWidget):
 			if obj.type == "Apple":
 				obj.setScoreAdd (50)
 				obj.setSpeed (6)
+				obj.setSound ("./sounds/special_apple_hit.wav")
+				
 			elif obj.type == "Lemon":
 				obj.setScoreAdd (0)
 				obj.setSpeed (3)
+				
 		elif self.special_type == "Citrus":
 			if obj.type == "Apple":
 				obj.setScoreAdd (0)
 				obj.setSpeed (3)
+				
 			elif obj.type == "Lemon":
 				obj.setScoreAdd (-50)
 				obj.setSpeed (6)
+				obj.setSound ("./sounds/special_lemon_hit.wav")
 	
 	def special_efx_stop (self):
 		self.special_type = None
@@ -157,6 +170,11 @@ class Interface (QtWidgets.QWidget):
 		self.game_timer.stop()
 		if self.stop_box == None:
 			self.stop_box = self.scene.addRect(0, 0, self.scene.width(), self.scene.height(), QtGui.QPen(self.stop_color), QtGui.QBrush(self.stop_color))
+		
+		if self.falling_obj_sound:
+			if self.falling_obj_sound.isPlaying():
+				self.falling_obj_sound.stop()
+		self.stop_sound.play()
 		
 	def start_game (self):
 		self.game_timer.start()
@@ -171,17 +189,24 @@ class Interface (QtWidgets.QWidget):
 			self.stop_box = None
 		
 		for i, obj in enumerate(self.falling_objs):
-			self.scene.removeItem (obj)
-			self.falling_objs[i] = None
+			if obj:
+				self.scene.removeItem (obj)
+				self.falling_objs[i] = None
 		
 		if self.special_timer.isActive():
 			self.special_timer.stop()
 			self.special_efx_stop ()
 			
+		if self.falling_obj_sound:
+			if self.falling_obj_sound.isPlaying():
+				self.falling_obj_sound.stop()
+			self.falling_obj_sound = None
+		
 		self.player_x = 0
 		self.player.setPos (self.player_x, self.player_y)
 		
 		self.score_num = 0
 		self.show_score(0)
 		
+		self.start_sound.play()
 		self.start_game()

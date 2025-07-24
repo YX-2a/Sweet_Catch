@@ -7,7 +7,7 @@ from menu import Menu
 class Window (QMainWindow):
 	def __init__ (self):
 		super().__init__(parent = None, flags = Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint | Qt.WindowTitleHint)
-		self.setWindowTitle ("Sweet Catch !")
+		self.setWindowTitle ("Sweet Catch")
 		self.setWindowIcon (QIcon("./textures/leaf.png"))
 		self.setFixedSize(500, 466) 
 		

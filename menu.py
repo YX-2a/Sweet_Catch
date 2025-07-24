@@ -41,17 +41,23 @@ class Menu (QtWidgets.QMenuBar):
 		self.pause()
 		msg_box = QtWidgets.QMessageBox(self.parent)
 		msg_box.setWindowTitle ("About")
-		msg_box.setText ("# Sweet Catch !!\n\nJust a Beta for now.")
+		msg_box.setText ("# Sweet Catch\n\nJust a Beta for now.")
 		msg_box.setTextFormat (QtCore.Qt.MarkdownText)
 		msg_box.exec()
 		self.unpause()
 	
 	def unpause (self):
+		self.pause_act.triggered.disconnect()
+		if self.parent.falling_obj_sound:
+			if self.parent.falling_obj_sound.isPlaying():
+				self.parent.falling_obj_sound.stop()
+		self.parent.stop_sound.play()
 		self.parent.start_game()
 		self.pause_act.setText ("Pause")
 		self.pause_act.triggered.connect (self.pause)
 		
 	def pause (self):
+		self.pause_act.triggered.disconnect()
 		self.parent.stop_game()
 		self.pause_act.setText ("Continue")
 		self.pause_act.triggered.connect (self.unpause)
