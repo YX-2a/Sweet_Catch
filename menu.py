@@ -51,14 +51,18 @@ class Menu (QtWidgets.QMenuBar):
 		if self.parent.falling_obj_sound:
 			if self.parent.falling_obj_sound.isPlaying():
 				self.parent.falling_obj_sound.stop()
-		self.parent.stop_sound.play()
 		self.parent.start_game()
+		self.parent.stop_sound.play()
 		self.pause_act.setText ("Pause")
 		self.pause_act.triggered.connect (self.pause)
 		
 	def pause (self):
 		self.pause_act.triggered.disconnect()
+		if self.parent.falling_obj_sound:
+			if self.parent.falling_obj_sound.isPlaying():
+				self.parent.falling_obj_sound.stop()
 		self.parent.stop_game()
+		self.parent.stop_sound.play()
 		self.pause_act.setText ("Continue")
 		self.pause_act.triggered.connect (self.unpause)
 		

@@ -59,7 +59,9 @@ class Interface (QtWidgets.QWidget):
 		self.scene.setBackgroundBrush(QtGui.QBrush(self.blu_bg_color))
 		self.view = QtWidgets.QGraphicsView (scene = self.scene)
 		self.view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-		
+		self.view.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+		self.view.setFixedSize (480, 384)
+
 		self.vbox.addWidget (self.score)
 		
 		self.player = Player (self.player_img, (96,96))
@@ -143,7 +145,7 @@ class Interface (QtWidgets.QWidget):
 		if self.special_type == "Pear":
 			if obj.type == "Apple":
 				obj.setScoreAdd (50)
-				obj.setSpeed (6)
+				obj.setSpeed (5)
 				obj.setSound ("./sounds/special_apple_hit.wav")
 				
 			elif obj.type == "Lemon":
@@ -170,11 +172,6 @@ class Interface (QtWidgets.QWidget):
 		self.game_timer.stop()
 		if self.stop_box == None:
 			self.stop_box = self.scene.addRect(0, 0, self.scene.width(), self.scene.height(), QtGui.QPen(self.stop_color), QtGui.QBrush(self.stop_color))
-		
-		if self.falling_obj_sound:
-			if self.falling_obj_sound.isPlaying():
-				self.falling_obj_sound.stop()
-		self.stop_sound.play()
 		
 	def start_game (self):
 		self.game_timer.start()
