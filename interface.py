@@ -123,9 +123,13 @@ class Interface (QtWidgets.QWidget):
 			
 			if self.falling_obj_sound:
 				self.falling_obj_sound.stop()
-				
-			self.falling_obj_sound = falling_obj.sound 
-			self.falling_obj_sound.play()
+				self.falling_obj_sound = None
+
+
+			if self.falling_obj_sound == None:
+				self.falling_obj_sound = falling_obj.sound
+				self.falling_obj_sound.play()
+
 			self.show_score(falling_obj.score_add)
 			self.scene.removeItem (falling_obj)
 			falling_obj = None
