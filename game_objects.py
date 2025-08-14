@@ -1,4 +1,5 @@
 from PySide6 import QtWidgets, QtGui, QtCore, QtMultimedia
+import game_settings
 
 class Game_Object (QtWidgets.QGraphicsPixmapItem):
 	def __init__ (self, img, sizeXY):
@@ -36,7 +37,10 @@ class Game_Sound (QtMultimedia.QSoundEffect):
 		super().__init__()
 		self.setSource (QtCore.QUrl.fromLocalFile(filename))
 		self.setLoopCount (1)
-		self.setVolume (1)
+		self.setVolume (game_settings.Game_Settings.audio_vol)
+
+	def update(self):
+		self.setVolume (game_settings.Game_Settings.audio_vol)
 	
 class Player (Game_Object):
 	def __init__ (self, img, sizeXY):

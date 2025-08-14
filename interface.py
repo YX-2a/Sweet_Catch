@@ -82,7 +82,7 @@ class Interface (QtWidgets.QWidget):
 		self.score.setText (self.display_text)
 		self.score.update ()
 		
-	def game_tick (self):
+	def game_tick (self):	
 		if (self.current_key == QtCore.Qt.Key_Q or self.current_key == QtCore.Qt.Key_A) and self.player_x > 0:
 			self.player_x -= self.player.speed
 		elif self.current_key == QtCore.Qt.Key_D and self.player_x < (self.scene.width() - 96):
@@ -122,12 +122,14 @@ class Interface (QtWidgets.QWidget):
 					self.scene.setBackgroundBrush(QtGui.QBrush(self.red_bg_color))
 			
 			if self.falling_obj_sound:
+				self.falling_obj_sound.update()
 				self.falling_obj_sound.stop()
 				self.falling_obj_sound = None
 
 
 			if self.falling_obj_sound == None:
 				self.falling_obj_sound = falling_obj.sound
+				self.falling_obj_sound.update()
 				self.falling_obj_sound.play()
 
 			self.show_score(falling_obj.score_add)
@@ -209,5 +211,6 @@ class Interface (QtWidgets.QWidget):
 		self.score_num = 0
 		self.show_score(0)
 		
+		self.start_sound.update()
 		self.start_sound.play()
 		self.start_game()

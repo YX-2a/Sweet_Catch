@@ -1,4 +1,5 @@
 from PySide6 import QtWidgets, QtCore
+from game_settings import Game_Settings
 
 class Menu (QtWidgets.QMenuBar):
 	def __init__ (self, parent, window):
@@ -15,21 +16,27 @@ class Menu (QtWidgets.QMenuBar):
 		self.game.addSeparator ()
 		self.quit_act = self.game.addAction ("Quit")
 		
+		self.settings = QtWidgets.QMenu ("Edit")
+		self.mute_act = self.settings.addAction ("Mute")
+
 		self.help = QtWidgets.QMenu ("Help")
 		self.about_act = self.help.addAction ("About")
 		
 		self.new_act.setShortcut   (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_N))
 		self.pause_act.setShortcut (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_P))
+		self.mute_act.setShortcut (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_M))
 		self.quit_act.setShortcut  (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_Q))
 		self.about_act.setShortcut (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_A))
 		
 		self.new_act.triggered.connect (self.new)
 		self.pause_act.triggered.connect (self.pause)
+		self.mute_act.triggered.connect (self.mute)
 		self.quit_act.triggered.connect (self.quit)
 		
 		self.about_act.triggered.connect (self.about)
 		
 		self.addMenu (self.game)
+		self.addMenu (self.settings)
 		self.addMenu (self.help)
 		
 		return self
@@ -52,6 +59,7 @@ class Menu (QtWidgets.QMenuBar):
 			if self.parent.falling_obj_sound.isPlaying():
 				self.parent.falling_obj_sound.stop()
 		self.parent.start_game()
+		self.parent.stop_sound.update()
 		self.parent.stop_sound.play()
 		self.pause_act.setText ("Pause")
 		self.pause_act.triggered.connect (self.pause)
@@ -62,10 +70,21 @@ class Menu (QtWidgets.QMenuBar):
 			if self.parent.falling_obj_sound.isPlaying():
 				self.parent.falling_obj_sound.stop()
 		self.parent.stop_game()
+		self.parent.stop_sound.update()
 		self.parent.stop_sound.play()
 		self.pause_act.setText ("Continue")
 		self.pause_act.triggered.connect (self.unpause)
-		
+
+	def mute(self):
+		self.mute_act.triggered.disconnect ()
+		Game_Settings.audio_vol = 0
+		self.mute_act.triggered.connect (self.unmute)
+
+	def unmute(self):
+		self.mute_act.triggered.disconnect ()
+		Game_Settings.audio_vol = 1
+		self.mute_act.triggered.connect (self.mute)
+
 	def quit (self):
 		self.parent.close()
 		self.window.close()
