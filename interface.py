@@ -25,6 +25,7 @@ class Interface (QtWidgets.QWidget):
 		self.falling_obj_sound = None
 		self.stop_box = None
 		self.special_state = False
+		self.collides_with_player = False
 		self.special_type = None
 		
 		self.current_key = None
@@ -112,6 +113,7 @@ class Interface (QtWidgets.QWidget):
 				return falling_obj
 			
 		elif falling_obj.collidesWithItem(self.player):
+			self.collides_with_player = True
 			if falling_obj.type == "Special": 
 				self.special_type = falling_obj.sub_type
 				self.special_state = True
@@ -126,15 +128,17 @@ class Interface (QtWidgets.QWidget):
 				self.falling_obj_sound.stop()
 				self.falling_obj_sound = None
 
-
 			if self.falling_obj_sound == None:
 				self.falling_obj_sound = falling_obj.sound
 				self.falling_obj_sound.update()
+				
+			if self.collides_with_player:
 				self.falling_obj_sound.play()
 
 			self.show_score(falling_obj.score_add)
 			self.scene.removeItem (falling_obj)
 			falling_obj = None
+			self.collides_with_player = False
 			return falling_obj
 			
 		elif falling_obj.pos().y() >= self.scene.height():
@@ -204,6 +208,8 @@ class Interface (QtWidgets.QWidget):
 			if self.falling_obj_sound.isPlaying():
 				self.falling_obj_sound.stop()
 			self.falling_obj_sound = None
+			
+		self.collides_with_player = False
 		
 		self.player_x = 0
 		self.player.setPos (self.player_x, self.player_y)
