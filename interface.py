@@ -125,16 +125,16 @@ class Interface (QtWidgets.QWidget):
 				elif self.special_type == "Pear":
 					self.scene.setBackgroundBrush(QtGui.QBrush(self.red_bg_color))
 			
-			if self.falling_obj_sound:
+			if self.falling_obj_sound and falling_obj.type != "Leaf":
 				self.falling_obj_sound.update()
 				self.falling_obj_sound.stop()
 				self.falling_obj_sound = None
 
-			if self.falling_obj_sound == None:
+			if self.falling_obj_sound == None and falling_obj.sound:
 				self.falling_obj_sound = falling_obj.sound
 				self.falling_obj_sound.update()
 				
-			if self.collides_with_player:
+			if self.collides_with_player and self.falling_obj_sound and falling_obj.type != "Leaf":
 				self.falling_obj_sound.play()
 
 			self.show_score(falling_obj.score_add)

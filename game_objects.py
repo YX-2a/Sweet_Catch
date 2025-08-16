@@ -79,8 +79,12 @@ class Faller (Game_Object):
 		return path
 		
 	def setSound (self, fname):
-		self.fname = fname
-		self.sound = Game_Sound(self.fname)
+		if fname:
+			self.fname = fname
+			self.sound = Game_Sound(self.fname)
+			
+		else:
+			self.sound = None
 	
 class Apple (Faller):
 	def __init__ (self, img, sizeXY):
@@ -102,7 +106,7 @@ class Leaf (Faller):
 	def __init__ (self, img, sizeXY):
 		super().__init__( img, sizeXY )
 		self.type = "Leaf"
-		self.setSound("")
+		self.setSound(None)
 		
 class Special (Faller):
 	def __init__ (self, img, sizeXY):
