@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound
+from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound, Game_View
 from random import choice, randint
 
 class Interface (QtWidgets.QWidget):
@@ -58,7 +58,7 @@ class Interface (QtWidgets.QWidget):
 		
 		self.scene = QtWidgets.QGraphicsScene (0,0,480,384)
 		self.scene.setBackgroundBrush(QtGui.QBrush(self.blu_bg_color))
-		self.view = QtWidgets.QGraphicsView (scene = self.scene)
+		self.view = Game_View (scene = self.scene)
 		self.view.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 		self.view.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
 		self.view.setFixedSize (480, 384)
@@ -84,10 +84,12 @@ class Interface (QtWidgets.QWidget):
 		self.score.update ()
 		
 	def game_tick (self):	
-		if (self.current_key == QtCore.Qt.Key_Q or self.current_key == QtCore.Qt.Key_A) and self.player_x > 0:
+		if (self.current_key == QtCore.Qt.Key_Left and self.player_x > 0):
 			self.player_x -= self.player.speed
-		elif self.current_key == QtCore.Qt.Key_D and self.player_x < (self.scene.width() - 96):
+			
+		elif (self.current_key == QtCore.Qt.Key_Right and self.player_x < (self.scene.width() - 96)):
 			self.player_x += self.player.speed
+			
 		self.player.setX(self.player_x)
 		
 		for index, falling_obj in enumerate(self.falling_objs):

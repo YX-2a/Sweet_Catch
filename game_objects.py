@@ -1,6 +1,16 @@
 from PySide6 import QtWidgets, QtGui, QtCore, QtMultimedia
 import game_settings
 
+class Game_View (QtWidgets.QGraphicsView):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
+	def keyPressEvent (self, e):
+		e.ignore()
+	
+	def keyReleaseEvent (self, e):
+		e.ignore()
+
 class Game_Object (QtWidgets.QGraphicsPixmapItem):
 	def __init__ (self, img, sizeXY):
 		super().__init__( QtGui.QPixmap(img.scaled(sizeXY[0], sizeXY[1])) )
