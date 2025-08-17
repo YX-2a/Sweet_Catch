@@ -25,7 +25,7 @@ class Interface (QtWidgets.QWidget):
 		self.falling_obj_sound = None
 		self.stop_box = None
 		self.special_state = False
-		self.collides_with_player = False
+		self.collides_with_player = []
 		self.special_type = None
 		
 		self.current_key = None
@@ -98,6 +98,9 @@ class Interface (QtWidgets.QWidget):
 			
 	def falling_obj_tick (self, falling_obj):
 		if falling_obj == None:
+			for i, obj in enumerate(self.collides_with_player):
+				del self.collides_with_player[i]
+				
 			falling_objs_classes = [Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48)), Leaf(self.leaf_img, (48,48))] 
 			falling_obj = choice(falling_objs_classes)
 			
@@ -115,7 +118,7 @@ class Interface (QtWidgets.QWidget):
 				return falling_obj
 			
 		elif falling_obj.collidesWithItem(self.player):
-			self.collides_with_player = True
+			self.collides_with_player.append(falling_obj)
 			if falling_obj.type == "Special": 
 				self.special_type = falling_obj.sub_type
 				self.special_state = True
@@ -125,22 +128,15 @@ class Interface (QtWidgets.QWidget):
 				elif self.special_type == "Pear":
 					self.scene.setBackgroundBrush(QtGui.QBrush(self.red_bg_color))
 			
-			if self.falling_obj_sound and falling_obj.type != "Leaf":
+			if falling_obj.type != "Leaf":
+				self.falling_obj_sound = self.collides_with_player[-1].sound
 				self.falling_obj_sound.update()
-				self.falling_obj_sound.stop()
-				self.falling_obj_sound = None
-
-			if self.falling_obj_sound == None and falling_obj.sound:
-				self.falling_obj_sound = falling_obj.sound
-				self.falling_obj_sound.update()
-				
-			if self.collides_with_player and self.falling_obj_sound and falling_obj.type != "Leaf":
 				self.falling_obj_sound.play()
-
+				
 			self.show_score(falling_obj.score_add)
 			self.scene.removeItem (falling_obj)
 			falling_obj = None
-			self.collides_with_player = False
+			print(self.collides_with_player)
 			return falling_obj
 			
 		elif falling_obj.pos().y() >= self.scene.height():
@@ -209,9 +205,9 @@ class Interface (QtWidgets.QWidget):
 		if self.falling_obj_sound:
 			if self.falling_obj_sound.isPlaying():
 				self.falling_obj_sound.stop()
-			self.falling_obj_sound = None
+				self.falling_obj_sound = None
 			
-		self.collides_with_player = False
+		self.collides_with_player = []
 		
 		self.player_x = 0
 		self.player.setPos (self.player_x, self.player_y)
