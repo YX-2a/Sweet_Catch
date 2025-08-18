@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound, Game_View
+from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound, Game_View, Game_Text
 from random import choice, randint
 
 class Interface (QtWidgets.QWidget):
@@ -7,18 +7,21 @@ class Interface (QtWidgets.QWidget):
 		super().__init__()
 		self.player_x = 0
 		self.player_y = 288
-		
+
 		self.stop_sound = Game_Sound("./sounds/pause_game.wav")
 		self.start_sound = Game_Sound("./sounds/new_game.wav")
 		self.blu_bg_color = QtGui.QColor(0, 181, 226)
 		self.red_bg_color = QtGui.QColor(255, 0, 0)
-		self.yel_bg_color = QtGui.QColor(255, 255, 0)
+		self.red_txt_color = QtGui.QColor (200, 0, 50, 250)
+		self.yel_bg_color = QtGui.QColor(255, 255, 50)
+		self.yel_txt_color = QtGui.QColor (250, 170, 0, 250)
 		self.player_img = QtGui.QImage ("./textures/basket.png")
 		self.apple_img = QtGui.QImage ("./textures/apple.png")
 		self.lemon_img = QtGui.QImage ("./textures/lemon.png")
 		self.leaf_img = QtGui.QImage ("./textures/leaf.png")
 		self.special_img = QtGui.QImage ("./textures/special.png")
 		self.stop_color = QtGui.QColor (127, 127, 127, 170)
+		self.underlay_text = Game_Text()
 		
 		self.falling_obj_coords = [i for i in range (0, 480, 48)]
 		self.falling_objs = [None for i in range(5)]
@@ -67,7 +70,8 @@ class Interface (QtWidgets.QWidget):
 		
 		self.player = Player (self.player_img, (96,96))
 		self.player.setPos (self.player_x, self.player_y)
-		
+		self.player.setZValue(1)
+
 		self.scene.addItem (self.player)
 		self.vbox.addWidget (self.view)
 		
@@ -111,7 +115,22 @@ class Interface (QtWidgets.QWidget):
 			self.scene.addItem (falling_obj)
 			falling_obj.setX (falling_obj_x)
 			falling_obj.setY (-48 - randint (0, 48))
+			falling_obj.setZValue(0.5)
 			if self.special_state:
+				if self.special_type == "Citrus":
+					if self.yel_txt_color.alpha() > 0:
+						print(self.yel_txt_color.alpha())
+						self.yel_txt_color.setAlpha(self.yel_txt_color.alpha() - 35)
+						self.underlay_text.setColor(self.yel_txt_color)
+						self.underlay_text.update()
+					
+				elif self.special_type == "Pear":
+					if self.red_txt_color.alpha() > 0:
+						print(self.red_txt_color.alpha())
+						self.red_txt_color.setAlpha(self.red_txt_color.alpha() - 35)
+						self.underlay_text.setColor(self.red_txt_color)
+						self.underlay_text.update()
+
 				self.special_efx_tick (falling_obj)
 				return falling_obj
 			else:
@@ -125,14 +144,31 @@ class Interface (QtWidgets.QWidget):
 				self.special_timer.start()
 				if self.special_type == "Citrus":
 					self.scene.setBackgroundBrush(QtGui.QBrush(self.yel_bg_color))
+					self.underlay_text.setText("Citrus Curse")
+					self.underlay_text.setSize(70)
+					self.underlay_text.setPos ((480//2)-(self.underlay_text.textWidth()//2), (384//2)-50)
+					if self.yel_txt_color.alpha() <= 0:
+						self.yel_txt_color.setAlpha(255)
+						self.underlay_text.setColor(self.yel_txt_color)
+
+					self.scene.addItem (self.underlay_text)
+					
 				elif self.special_type == "Pear":
 					self.scene.setBackgroundBrush(QtGui.QBrush(self.red_bg_color))
-			
+					self.underlay_text.setText("Sweet Blessing")
+					self.underlay_text.setSize(70)
+					self.underlay_text.setPos ((480//2)-(self.underlay_text.textWidth()//2), (384//2)-50)
+					if self.red_txt_color.alpha() <= 0:
+						self.red_txt_color.setAlpha(255)
+						self.underlay_text.setColor(self.red_txt_color)
+
+					self.scene.addItem (self.underlay_text)
+					
 			if falling_obj.type != "Leaf":
 				self.falling_obj_sound = self.collides_with_player[-1].sound
 				self.falling_obj_sound.update()
 				self.falling_obj_sound.play()
-				
+
 			self.show_score(falling_obj.score_add)
 			self.scene.removeItem (falling_obj)
 			falling_obj = None
@@ -180,6 +216,7 @@ class Interface (QtWidgets.QWidget):
 		self.game_timer.stop()
 		if self.stop_box == None:
 			self.stop_box = self.scene.addRect(0, 0, self.scene.width(), self.scene.height(), QtGui.QPen(self.stop_color), QtGui.QBrush(self.stop_color))
+			self.stop_box.setZValue(2)
 		
 	def start_game (self):
 		self.game_timer.start()
