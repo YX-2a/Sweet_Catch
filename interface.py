@@ -12,9 +12,9 @@ class Interface (QtWidgets.QWidget):
 		self.start_sound = Game_Sound("./sounds/new_game.wav")
 		self.blu_bg_color = QtGui.QColor(0, 181, 226)
 		self.red_bg_color = QtGui.QColor(255, 0, 0)
-		self.red_txt_color = QtGui.QColor (200, 0, 50, 250)
+		self.red_txt_color = QtGui.QColor (200, 0, 50, 255)
 		self.yel_bg_color = QtGui.QColor(255, 255, 50)
-		self.yel_txt_color = QtGui.QColor (250, 170, 0, 250)
+		self.yel_txt_color = QtGui.QColor (250, 170, 0, 255)
 		self.player_img = QtGui.QImage ("./textures/basket.png")
 		self.apple_img = QtGui.QImage ("./textures/apple.png")
 		self.lemon_img = QtGui.QImage ("./textures/lemon.png")
@@ -70,7 +70,7 @@ class Interface (QtWidgets.QWidget):
 		
 		self.player = Player (self.player_img, (96,96))
 		self.player.setPos (self.player_x, self.player_y)
-		self.player.setZValue(1)
+		self.player.setZValue(0.5)
 
 		self.scene.addItem (self.player)
 		self.vbox.addWidget (self.view)
@@ -95,16 +95,36 @@ class Interface (QtWidgets.QWidget):
 			self.player_x += self.player.speed
 			
 		self.player.setX(self.player_x)
-		
+
+		if self.special_state:
+			if self.special_type == "Citrus":
+				if self.yel_txt_color.alpha() <= 0:
+					if self.underlay_text in self.scene.items():
+						self.scene.removeItem (self.underlay_text)
+					
+				elif self.yel_txt_color.alpha() > 0:
+					self.yel_txt_color.setAlpha(self.yel_txt_color.alpha() - 5)
+					self.underlay_text.setColor(self.yel_txt_color)
+					self.underlay_text.update()
+					
+			elif self.special_type == "Pear":
+				if self.red_txt_color.alpha() <= 0:
+					if self.underlay_text in self.scene.items():
+						self.scene.removeItem (self.underlay_text)
+					
+				elif self.red_txt_color.alpha() > 0:
+					self.red_txt_color.setAlpha(self.red_txt_color.alpha() - 5)
+					self.underlay_text.setColor(self.red_txt_color)
+					self.underlay_text.update()
+
 		for index, falling_obj in enumerate(self.falling_objs):
 			fallen_obj = self.falling_obj_tick(falling_obj)
 			self.falling_objs[index] = fallen_obj
 			
 	def falling_obj_tick (self, falling_obj):
 		if falling_obj == None:
-			for i, obj in enumerate(self.collides_with_player):
-				del self.collides_with_player[i]
-				
+			self.collides_with_player = []
+			
 			falling_objs_classes = [Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48)), Leaf(self.leaf_img, (48,48))] 
 			falling_obj = choice(falling_objs_classes)
 			
@@ -115,55 +135,31 @@ class Interface (QtWidgets.QWidget):
 			self.scene.addItem (falling_obj)
 			falling_obj.setX (falling_obj_x)
 			falling_obj.setY (-48 - randint (0, 48))
-			falling_obj.setZValue(0.5)
-			if self.special_state:
-				if self.special_type == "Citrus":
-					if self.yel_txt_color.alpha() > 0:
-						print(self.yel_txt_color.alpha())
-						self.yel_txt_color.setAlpha(self.yel_txt_color.alpha() - 35)
-						self.underlay_text.setColor(self.yel_txt_color)
-						self.underlay_text.update()
-					
-				elif self.special_type == "Pear":
-					if self.red_txt_color.alpha() > 0:
-						print(self.red_txt_color.alpha())
-						self.red_txt_color.setAlpha(self.red_txt_color.alpha() - 35)
-						self.underlay_text.setColor(self.red_txt_color)
-						self.underlay_text.update()
+			falling_obj.setZValue(1)
 
-				self.special_efx_tick (falling_obj)
-				return falling_obj
-			else:
-				return falling_obj
+			return falling_obj
 			
 		elif falling_obj.collidesWithItem(self.player):
 			self.collides_with_player.append(falling_obj)
+			
 			if falling_obj.type == "Special": 
 				self.special_type = falling_obj.sub_type
 				self.special_state = True
-				self.special_timer.start()
 				if self.special_type == "Citrus":
 					self.scene.setBackgroundBrush(QtGui.QBrush(self.yel_bg_color))
 					self.underlay_text.setText("Citrus Curse")
-					self.underlay_text.setSize(70)
-					self.underlay_text.setPos ((480//2)-(self.underlay_text.textWidth()//2), (384//2)-50)
-					if self.yel_txt_color.alpha() <= 0:
-						self.yel_txt_color.setAlpha(255)
-						self.underlay_text.setColor(self.yel_txt_color)
+					self.underlay_text.setColor(self.yel_txt_color)
 
-					self.scene.addItem (self.underlay_text)
-					
 				elif self.special_type == "Pear":
 					self.scene.setBackgroundBrush(QtGui.QBrush(self.red_bg_color))
 					self.underlay_text.setText("Sweet Blessing")
-					self.underlay_text.setSize(70)
-					self.underlay_text.setPos ((480//2)-(self.underlay_text.textWidth()//2), (384//2)-50)
-					if self.red_txt_color.alpha() <= 0:
-						self.red_txt_color.setAlpha(255)
-						self.underlay_text.setColor(self.red_txt_color)
+					self.underlay_text.setColor(self.red_txt_color)
 
-					self.scene.addItem (self.underlay_text)
-					
+				self.underlay_text.setSize(70)
+				self.underlay_text.setPos ((480//2)-(self.underlay_text.textWidth()//2), (384//2)-50)
+				self.scene.addItem (self.underlay_text)
+				self.special_timer.start()
+				
 			if falling_obj.type != "Leaf":
 				self.falling_obj_sound = self.collides_with_player[-1].sound
 				self.falling_obj_sound.update()
@@ -172,7 +168,6 @@ class Interface (QtWidgets.QWidget):
 			self.show_score(falling_obj.score_add)
 			self.scene.removeItem (falling_obj)
 			falling_obj = None
-			print(self.collides_with_player)
 			return falling_obj
 			
 		elif falling_obj.pos().y() >= self.scene.height():
@@ -182,6 +177,9 @@ class Interface (QtWidgets.QWidget):
 			return falling_obj
 			
 		else:
+			if self.special_state:
+				self.special_efx_tick (falling_obj)
+
 			falling_obj.setY (falling_obj.pos().y() + falling_obj.speed)
 			return falling_obj
 	
@@ -208,9 +206,26 @@ class Interface (QtWidgets.QWidget):
 	
 	def special_efx_stop (self):
 		self.special_type = None
-		self.special_state = False	
+		self.special_state = False
+		if self.underlay_text in self.scene.items():
+			self.scene.removeItem (self.underlay_text)
+		self.yel_txt_color.setAlpha(255)
+		self.red_txt_color.setAlpha(255)
 		self.bg_color = QtGui.QColor(0, 181, 226)
 		self.scene.setBackgroundBrush(QtGui.QBrush(self.bg_color))
+		for i, obj in enumerate(self.falling_objs):
+			if obj:
+				if obj.type == "Apple":
+					obj.setScoreAdd (10)
+					obj.setSpeed (4)
+					obj.setSound ("./sounds/apple_hit.wav")
+				
+				elif obj.type == "Lemon":
+					obj.setScoreAdd (-10)
+					obj.setSpeed (3)
+					obj.setSound ("./sounds/apple_hit.wav")
+			self.falling_objs[i] = obj
+						
 	
 	def stop_game (self):
 		self.game_timer.stop()
