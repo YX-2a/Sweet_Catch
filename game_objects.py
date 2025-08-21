@@ -53,36 +53,33 @@ class Game_Sound (QtMultimedia.QSoundEffect):
 		self.setVolume (game_settings.Game_Settings.audio_vol)
 
 class Game_Text (QtWidgets.QGraphicsTextItem):
-              def __init__ (self):
-                            super().__init__()
-                            self.setZValue(0.1)
-                            self.text_font = QtGui.QFont()
-                            self.text_font.setBold(True)
-
-                            self.plain_text = ""
-                            self.text_color = None
-                            self.text_size = 0
+	def __init__ (self):
+		super().__init__()
+		self.setZValue(0.1)
+		self.text_font = QtGui.QFont("Sans")
+		self.text_font.setBold(True)
+		self.plain_text = ""
+		self.text_color = None
+		self.text_size = 0
                             
-                            self.setFont(self.text_font)
+		self.setFont(self.text_font)
+		self.adjustSize()
 
-                            self.adjustSize()
+	def setSize (self, size):
+		self.text_font.setPixelSize(size)
+		self.text_size = size
+		self.setFont(self.text_font)
+		self.adjustSize()
 
-              def setSize (self, size):
-                            self.text_font.setPixelSize(size)
-                            self.text_size = size
-                            self.setFont(self.text_font)
-                            self.adjustSize()
-                            
-              def setText (self, text):
-                            self.setPlainText(text)
-                            self.plain_text = text
-                            self.adjustSize()
-                            
-              def setColor (self, color):
-                            self.setDefaultTextColor(color)
-                            self.text_color = color
+	def setText (self, text):
+		self.setPlainText(text)
+		self.plain_text = text
+		self.adjustSize()
 
-                            
+	def setColor (self, color):
+		self.setDefaultTextColor(color)
+		self.text_color = color
+
 class Player (Game_Object):
 	def __init__ (self, img, sizeXY):
 		super().__init__( img, sizeXY )

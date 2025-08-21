@@ -155,9 +155,10 @@ class Interface (QtWidgets.QWidget):
 					self.underlay_text.setText("Sweet Blessing")
 					self.underlay_text.setColor(self.red_txt_color)
 
-				self.underlay_text.setSize(70)
+				self.underlay_text.setSize(60)
 				self.underlay_text.setPos ((480//2)-(self.underlay_text.textWidth()//2), (384//2)-50)
-				self.scene.addItem (self.underlay_text)
+				if not self.underlay_text in self.scene.items():
+					self.scene.addItem (self.underlay_text)
 				self.special_timer.start()
 				
 			if falling_obj.type != "Leaf":
