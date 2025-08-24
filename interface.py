@@ -33,6 +33,7 @@ class Interface (QtWidgets.QWidget):
 		
 		self.current_key = None
 		self.score_num = 0
+		self.special_timer_interval = 10000
 		self.display_text = f"<font size=5>Score : {self.score_num}</font>"
 		
 	def make (self):
@@ -43,7 +44,7 @@ class Interface (QtWidgets.QWidget):
 		self.game_timer.timeout.connect (self.game_tick)
 		
 		self.special_timer = QtCore.QTimer()
-		self.special_timer.setInterval (10000)
+		self.special_timer.setInterval (self.special_timer_interval)
 		self.special_timer.timeout.connect (self.special_efx_stop)
 		self.special_timer.setSingleShot (True)
 		
@@ -214,6 +215,9 @@ class Interface (QtWidgets.QWidget):
 		self.red_txt_color.setAlpha(255)
 		self.bg_color = QtGui.QColor(0, 181, 226)
 		self.scene.setBackgroundBrush(QtGui.QBrush(self.bg_color))
+		
+		self.special_timer_interval = 10000
+		self.special_timer.setInterval (self.special_timer_interval)
 		for i, obj in enumerate(self.falling_objs):
 			if obj:
 				if obj.type == "Apple":
@@ -226,16 +230,22 @@ class Interface (QtWidgets.QWidget):
 					obj.setSpeed (3)
 					obj.setSound ("./sounds/apple_hit.wav")
 			self.falling_objs[i] = obj
-						
-	
+			
 	def stop_game (self):
 		self.game_timer.stop()
+		if self.special_timer.isActive():
+			self.special_timer_interval = self.special_timer.remainingTime()
+			self.special_timer.stop()
+			
 		if self.stop_box == None:
 			self.stop_box = self.scene.addRect(0, 0, self.scene.width(), self.scene.height(), QtGui.QPen(self.stop_color), QtGui.QBrush(self.stop_color))
 			self.stop_box.setZValue(2)
 		
 	def start_game (self):
 		self.game_timer.start()
+		if self.special_state:
+			self.special_timer.start(self.special_timer_interval)
+			
 		if self.stop_box != None:
 			self.scene.removeItem (self.stop_box)
 			self.stop_box = None
