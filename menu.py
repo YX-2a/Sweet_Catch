@@ -1,5 +1,5 @@
 from PySide6 import QtWidgets, QtCore
-from game_settings import SettingsWindow
+from game_settings import SettingsWindow, Game_Settings
 
 class Menu (QtWidgets.QMenuBar):
 	def __init__ (self, parent, window):
@@ -11,29 +11,28 @@ class Menu (QtWidgets.QMenuBar):
 		
 	def make (self):
 		self.game = QtWidgets.QMenu ("Game")
-		self.new_act = self.game.addAction ("New")
-		self.pause_act = self.game.addAction ("Pause")
+		self.game_new_act = self.game.addAction ("New")
+		self.game_pause_act = self.game.addAction ("Pause")
 		self.game.addSeparator ()
-		self.quit_act = self.game.addAction ("Quit")
+		self.game_quit_act = self.game.addAction ("Quit")
 		
 		self.settings = QtWidgets.QMenu ("Edit")
-		self.set_act = self.settings.addAction ("Settings")
+		self.settings_set_act = self.settings.addAction ("Settings")
 
 		self.help = QtWidgets.QMenu ("Help")
-		self.about_act = self.help.addAction ("About")
+		self.help_about_act = self.help.addAction ("About")
 		
-		self.new_act.setShortcut   (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_N))
-		self.pause_act.setShortcut (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_P))
-		self.set_act.setShortcut (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_S))
-		self.quit_act.setShortcut  (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_Q))
-		self.about_act.setShortcut (QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_A))
+		self.game_new_act.setShortcut (Game_Settings.game_new_act_k)
+		self.game_pause_act.setShortcut (Game_Settings.game_pause_act_k)
+		self.settings_set_act.setShortcut (Game_Settings.settings_set_act_k)
+		self.game_quit_act.setShortcut (Game_Settings.game_quit_act_k)
+		self.help_about_act.setShortcut (Game_Settings.help_about_act_k)
 		
-		self.new_act.triggered.connect (self.new)
-		self.pause_act.triggered.connect (self.pause)
-		self.set_act.triggered.connect (self.set_diag)
-		self.quit_act.triggered.connect (self.quit)
-		
-		self.about_act.triggered.connect (self.about)
+		self.game_new_act.triggered.connect (self.new)
+		self.game_pause_act.triggered.connect (self.pause)
+		self.game_quit_act.triggered.connect (self.quit)
+		self.settings_set_act.triggered.connect (self.set_diag)
+		self.help_about_act.triggered.connect (self.about)
 		
 		self.addMenu (self.game)
 		self.addMenu (self.settings)
@@ -52,26 +51,26 @@ class Menu (QtWidgets.QMenuBar):
 		msg_box.exec()
 	
 	def unpause (self):
-		self.pause_act.triggered.disconnect()
+		self.game_pause_act.triggered.disconnect()
 		if self.parent.falling_obj_sound:
 			if self.parent.falling_obj_sound.isPlaying():
 				self.parent.falling_obj_sound.stop()
 		self.parent.start_game()
 		self.parent.stop_sound.update()
 		self.parent.stop_sound.play()
-		self.pause_act.setText ("Pause")
-		self.pause_act.triggered.connect (self.pause)
+		self.game_pause_act.setText ("Pause")
+		self.game_pause_act.triggered.connect (self.pause)
 		
 	def pause (self):
-		self.pause_act.triggered.disconnect()
+		self.game_pause_act.triggered.disconnect()
 		if self.parent.falling_obj_sound:
 			if self.parent.falling_obj_sound.isPlaying():
 				self.parent.falling_obj_sound.stop()
 		self.parent.stop_game()
 		self.parent.stop_sound.update()
 		self.parent.stop_sound.play()
-		self.pause_act.setText ("Continue")
-		self.pause_act.triggered.connect (self.unpause)
+		self.game_pause_act.setText ("Continue")
+		self.game_pause_act.triggered.connect (self.unpause)
 
 	def set_diag(self):
 		settings_win = SettingsWindow(self.parent)

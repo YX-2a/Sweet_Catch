@@ -1,6 +1,8 @@
 from PySide6 import QtWidgets, QtCore, QtGui
-from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound, Game_View, Game_Text
 from random import choice, randint
+
+from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound, Game_View, Game_Text
+from game_settings import Game_Settings
 
 class Interface (QtWidgets.QWidget):
 	def __init__ (self):
@@ -88,11 +90,11 @@ class Interface (QtWidgets.QWidget):
 		self.score.setText (self.display_text)
 		self.score.update ()
 		
-	def game_tick (self):	
-		if (self.current_key == QtCore.Qt.Key_Left and self.player_x > 0):
+	def game_tick (self):
+		if (self.current_key == Game_Settings.player_left_k and self.player_x > 0):
 			self.player_x -= self.player.speed
 			
-		elif (self.current_key == QtCore.Qt.Key_Right and self.player_x < (self.scene.width() - 96)):
+		elif (self.current_key == Game_Settings.player_right_k and self.player_x < (self.scene.width() - 96)):
 			self.player_x += self.player.speed
 			
 		self.player.setX(self.player_x)
@@ -156,7 +158,7 @@ class Interface (QtWidgets.QWidget):
 					self.underlay_text.setText("Sweet Blessing")
 					self.underlay_text.setColor(self.red_txt_color)
 
-				self.underlay_text.setSize(60)
+				self.underlay_text.setSize(50)
 				self.underlay_text.setPos ((480//2)-(self.underlay_text.textWidth()//2), (384//2)-50)
 				if not self.underlay_text in self.scene.items():
 					self.scene.addItem (self.underlay_text)

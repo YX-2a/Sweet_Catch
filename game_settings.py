@@ -1,8 +1,15 @@
 from PySide6 import QtWidgets, QtCore
 
 class Game_Settings:
-    audio_vol = 1
-	
+	audio_vol = 1
+	player_left_k = QtCore.Qt.Key_Left
+	player_right_k = QtCore.Qt.Key_Right
+	settings_set_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_S)
+	game_new_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_N) 
+	game_pause_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_P)
+	game_quit_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_Q)
+	help_about_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_A)
+
 class SettingsWindow(QtWidgets.QDialog):
 	def __init__ (self, parent):
 		super().__init__(parent)
