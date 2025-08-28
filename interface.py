@@ -163,7 +163,7 @@ class Interface (QtWidgets.QWidget):
 				if not self.underlay_text in self.scene.items():
 					self.scene.addItem (self.underlay_text)
 				self.special_timer.start()
-				
+			
 			if falling_obj.type != "Leaf":
 				self.falling_obj_sound = self.collides_with_player[-1].sound
 				self.falling_obj_sound.update()
