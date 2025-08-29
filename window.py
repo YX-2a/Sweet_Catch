@@ -1,6 +1,9 @@
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtCore import Qt, QTimer, QEvent
 from PySide6.QtGui import QIcon
+
+from game_settings import Game_Settings
+from settings_rw import settings_writer
 from interface import Interface
 from menu import Menu
 
@@ -41,3 +44,7 @@ class Window (QMainWindow):
 				self.inter.stop_game()
 		
 		super().changeEvent(e)
+		
+	def close (self):
+		settings_writer(Game_Settings.settings_dict, "game.settings")
+		super().close()

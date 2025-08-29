@@ -1,14 +1,16 @@
 from PySide6 import QtWidgets, QtCore
+from settings_rw import settings_reader, settings_writer, make_to_string
 
 class Game_Settings:
-	audio_vol = 1
-	player_left_k = [QtCore.Qt.Key_Left, "Move Player Left"]
-	player_right_k = [QtCore.Qt.Key_Right, "Move Player Right"]
-	settings_set_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_S), "Open Game Settings"]
-	game_new_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_N), "New Game"]
-	game_pause_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_P), "Pause/Continue Game"]
-	game_quit_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_Q), "Quit Game"]
-	help_about_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_A), "About Game"]
+	settings_dict = settings_reader("game.settings")
+	audio_vol = settings_dict["Volume"]
+	player_left_k = [settings_dict["Move Player Left"], "Move Player Left"]
+	player_right_k = [settings_dict["Move Player Right"], "Move Player Right"]
+	settings_set_act_k = [settings_dict["Open Game Settings"], "Open Game Settings"]
+	game_new_act_k = [settings_dict["New Game"], "New Game"]
+	game_pause_act_k = [settings_dict["Pause/Continue Game"], "Pause/Continue Game"]
+	game_quit_act_k = [settings_dict["Quit Game"], "Quit Game"]
+	help_about_act_k = [settings_dict["About Game"], "About Game"]
 	all_controls = [player_left_k, player_right_k, settings_set_act_k, game_new_act_k, game_pause_act_k, game_quit_act_k, help_about_act_k]
 
 class SettingsTab(QtWidgets.QWidget):
@@ -39,6 +41,7 @@ class AudioTab(SettingsTab):
 
 	def tabAction(self):
 		Game_Settings.audio_vol = self.audio_slider.value() / 100
+		Game_Settings.settings_dict["Volume"] = Game_Settings.audio_vol
 
 class ControlsTab(SettingsTab):
 	def __init__(self):
@@ -49,7 +52,7 @@ class ControlsTab(SettingsTab):
 		for control in Game_Settings.all_controls:
 			hbox_control = QtWidgets.QHBoxLayout()
 			control_label = QtWidgets.QLabel(f"{control[1]} : ")
-			control_button = QtWidgets.QPushButton(control[0].name.replace("Key_","") if type(control[0]) == QtCore.Qt.Key else control[0].keyboardModifiers().name.replace("Modifier","") + " + " + control[0].key().name.replace("Key_",""))
+			control_button = QtWidgets.QPushButton(make_to_string(control[0]))
 			
 			hbox_control.addWidget(control_label, alignment=QtCore.Qt.AlignLeft)
 			hbox_control.addWidget(control_button)

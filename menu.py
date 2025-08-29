@@ -28,9 +28,9 @@ class Menu (QtWidgets.QMenuBar):
 		self.game_quit_act.setShortcut (Game_Settings.game_quit_act_k[0])
 		self.help_about_act.setShortcut (Game_Settings.help_about_act_k[0])
 		
-		self.game_new_act.triggered.connect (self.new)
+		self.game_new_act.triggered.connect (self.parent.reset_game)
 		self.game_pause_act.triggered.connect (self.pause)
-		self.game_quit_act.triggered.connect (self.quit)
+		self.game_quit_act.triggered.connect (self.window.close)
 		self.settings_set_act.triggered.connect (self.set_diag)
 		self.help_about_act.triggered.connect (self.about)
 		
@@ -39,9 +39,6 @@ class Menu (QtWidgets.QMenuBar):
 		self.addMenu (self.help)
 		
 		return self
-	
-	def new (self):
-		self.parent.reset_game()
 		
 	def about (self):
 		msg_box = QtWidgets.QMessageBox(self.parent)
@@ -75,7 +72,3 @@ class Menu (QtWidgets.QMenuBar):
 	def set_diag(self):
 		settings_win = SettingsWindow(self.parent)
 		settings_win.exec()
-
-	def quit (self):
-		self.parent.close()
-		self.window.close()
