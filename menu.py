@@ -22,11 +22,11 @@ class Menu (QtWidgets.QMenuBar):
 		self.help = QtWidgets.QMenu ("Help")
 		self.help_about_act = self.help.addAction ("About")
 		
-		self.game_new_act.setShortcut (Game_Settings.game_new_act_k)
-		self.game_pause_act.setShortcut (Game_Settings.game_pause_act_k)
-		self.settings_set_act.setShortcut (Game_Settings.settings_set_act_k)
-		self.game_quit_act.setShortcut (Game_Settings.game_quit_act_k)
-		self.help_about_act.setShortcut (Game_Settings.help_about_act_k)
+		self.game_new_act.setShortcut (Game_Settings.game_new_act_k[0])
+		self.game_pause_act.setShortcut (Game_Settings.game_pause_act_k[0])
+		self.settings_set_act.setShortcut (Game_Settings.settings_set_act_k[0])
+		self.game_quit_act.setShortcut (Game_Settings.game_quit_act_k[0])
+		self.help_about_act.setShortcut (Game_Settings.help_about_act_k[0])
 		
 		self.game_new_act.triggered.connect (self.new)
 		self.game_pause_act.triggered.connect (self.pause)

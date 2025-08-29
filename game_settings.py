@@ -2,19 +2,27 @@ from PySide6 import QtWidgets, QtCore
 
 class Game_Settings:
 	audio_vol = 1
-	player_left_k = QtCore.Qt.Key_Left
-	player_right_k = QtCore.Qt.Key_Right
-	settings_set_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_S)
-	game_new_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_N) 
-	game_pause_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_P)
-	game_quit_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_Q)
-	help_about_act_k = QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_A)
+	player_left_k = [QtCore.Qt.Key_Left, "Move Player Left"]
+	player_right_k = [QtCore.Qt.Key_Right, "Move Player Right"]
+	settings_set_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_S), "Open Game Settings"]
+	game_new_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_N), "New Game"]
+	game_pause_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_P), "Pause/Continue Game"]
+	game_quit_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_Q), "Quit Game"]
+	help_about_act_k = [QtCore.QKeyCombination(QtCore.Qt.ControlModifier, QtCore.Qt.Key_A), "About Game"]
+	all_controls = [player_left_k, player_right_k, settings_set_act_k, game_new_act_k, game_pause_act_k, game_quit_act_k, help_about_act_k]
 
-class SettingsWindow(QtWidgets.QDialog):
-	def __init__ (self, parent):
-		super().__init__(parent)
-		self.setWindowTitle ("Settings - Audio")
-		self.resize (600,300)
+class SettingsTab(QtWidgets.QWidget):
+	def __init__(self):
+		super().__init__()
+		self.tab_name = ""
+	
+	def tabAction(self):
+		pass
+
+class AudioTab(SettingsTab):
+	def __init__(self):
+		super().__init__()
+		self.tab_name = "Audio"
 		self.vbox = QtWidgets.QVBoxLayout(self)
 		self.hbox_audio = QtWidgets.QHBoxLayout()
 		
@@ -25,12 +33,51 @@ class SettingsWindow(QtWidgets.QDialog):
 		self.audio_slider.setSliderPosition(Game_Settings.audio_vol * 100)
 		self.audio_slider.setOrientation(QtCore.Qt.Horizontal)
 		
-		self.hbox_audio.addWidget(self.audio_label, alignment=QtCore.Qt.AlignLeft)
+		self.hbox_audio.addWidget(self.audio_label, alignment=QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
 		self.hbox_audio.addWidget(self.audio_slider)
 		self.vbox.addLayout (self.hbox_audio)
+
+	def tabAction(self):
+		Game_Settings.audio_vol = self.audio_slider.value() / 100
+
+class ControlsTab(SettingsTab):
+	def __init__(self):
+		super().__init__()
+		self.tab_name = "Controls"
+		self.vbox = QtWidgets.QVBoxLayout(self)
 		
+		for control in Game_Settings.all_controls:
+			hbox_control = QtWidgets.QHBoxLayout()
+			control_label = QtWidgets.QLabel(f"{control[1]} : ")
+			control_button = QtWidgets.QPushButton(control[0].name.replace("Key_","") if type(control[0]) == QtCore.Qt.Key else control[0].keyboardModifiers().name.replace("Modifier","") + " + " + control[0].key().name.replace("Key_",""))
+			
+			hbox_control.addWidget(control_label, alignment=QtCore.Qt.AlignLeft)
+			hbox_control.addWidget(control_button)
+			self.vbox.addLayout (hbox_control)
+
+
+class SettingsWindow(QtWidgets.QDialog):
+	def __init__ (self, parent):
+		super().__init__(parent)
+		self.audio_tab = AudioTab()
+		self.controls_tab = ControlsTab()
+		
+		self.resize (600,300)
+		self.vbox = QtWidgets.QVBoxLayout(self)
+		self.settings_tabs = QtWidgets.QTabWidget()
+		self.settings_tabs.addTab(self.audio_tab, self.audio_tab.tab_name)
+		self.settings_tabs.addTab(self.controls_tab, self.controls_tab.tab_name)
+		self.settings_tabs.currentChanged.connect(self.set_title)
+		
+		self.settings_tabs.setCurrentWidget(self.audio_tab)
+		self.setWindowTitle (f"Settings - {self.settings_tabs.currentWidget().tab_name}")
+		
+		self.vbox.addWidget(self.settings_tabs)
 		self.bottom_buttons()
-		
+	
+	def set_title(self, i):
+		self.setWindowTitle (f"Settings - {self.settings_tabs.widget(i).tab_name}")
+	
 	def bottom_buttons (self):
 		self.frame_buttons = QtWidgets.QFrame()
 		self.frame_buttons.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
@@ -40,7 +87,7 @@ class SettingsWindow(QtWidgets.QDialog):
 		self.confirm = QtWidgets.QPushButton("Confirm")
 		self.cancel = QtWidgets.QPushButton("Cancel")
 		
-		self.confirm.clicked.connect(self.setVolume)
+		self.confirm.clicked.connect(self.confirm_settings)
 		self.cancel.clicked.connect(self.destroy)
 		
 		self.confirm.setSizePolicy(QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed)
@@ -50,6 +97,9 @@ class SettingsWindow(QtWidgets.QDialog):
 		self.hbox_btns.addWidget(self.confirm)
 		self.vbox.addWidget (self.frame_buttons, alignment=QtCore.Qt.AlignBottom)
 
-	def setVolume(self):
-		Game_Settings.audio_vol = self.audio_slider.value() / 100
+	def confirm_settings(self):
+		for widget_index in range(self.settings_tabs.count()):
+			tab = self.settings_tabs.widget(widget_index)
+			tab.tabAction()
+		
 		self.destroy()
