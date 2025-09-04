@@ -1,4 +1,4 @@
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore, QtGui
 from settings_rw import settings_reader, settings_writer, make_to_string
 
 class Game_Settings:
@@ -48,17 +48,34 @@ class ControlsTab(SettingsTab):
 		super().__init__()
 		self.tab_name = "Controls"
 		self.vbox = QtWidgets.QVBoxLayout(self)
+		self.control_dict = {}
 		
 		for control in Game_Settings.all_controls:
 			hbox_control = QtWidgets.QHBoxLayout()
 			control_label = QtWidgets.QLabel(f"{control[1]} : ")
-			control_button = QtWidgets.QPushButton(make_to_string(control[0]))
+			control_button = QtWidgets.QKeySequenceEdit()
+			control_button.setKeySequence(control[0])
+			control_button.setMaximumSequenceLength(1)
+			control_button.editingFinished.connect(self.controlSet)
+			self.control_dict[control_button] = control
 			
 			hbox_control.addWidget(control_label, alignment=QtCore.Qt.AlignLeft)
 			hbox_control.addWidget(control_button)
 			self.vbox.addLayout (hbox_control)
-
-
+	
+	def controlSet (self):
+		the_control = self.sender()
+		key = the_control.keySequence()[0]
+		if key.keyboardModifiers() == QtCore.Qt.NoModifier:
+			key = key.key()
+			
+		self.control_dict[the_control][0] = key
+		for control in Game_Settings.all_controls:
+			if control[1] == self.control_dict[the_control][1]:
+				control[0] = self.control_dict[the_control][0]
+				Game_Settings.settings_dict[control[1]] = control[0]
+				break
+	
 class SettingsWindow(QtWidgets.QDialog):
 	def __init__ (self, parent):
 		super().__init__(parent)

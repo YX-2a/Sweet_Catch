@@ -230,7 +230,7 @@ class Interface (QtWidgets.QWidget):
 				elif obj.type == "Lemon":
 					obj.setScoreAdd (-10)
 					obj.setSpeed (3)
-					obj.setSound ("./sounds/apple_hit.wav")
+					obj.setSound ("./sounds/lemon_hit.wav")
 			self.falling_objs[i] = obj
 			
 	def stop_game (self):

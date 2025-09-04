@@ -10,22 +10,29 @@ def isnum(string):
 def make_to_QtKey(string):
 	final_stuff = ""
 	if "+" in string:
+		mod_list = ["Control", "Shift", "Meta", "Alt"]
 		final_stuff += "QtCore.QKeyCombination("
 		string = [i.strip() for i in string.split("+")]
 		for key in string:
-			if string.index(key) == len(string):
-				final_stuff += ")"
-			if key in ["Control", "Shift", "Meta"]:
-				final_stuff += "QtCore.Qt." + key + "Modifier" + ("," if string.index(key) < len(string)-1 else ")")
+			if key in mod_list:
+				final_stuff += "QtCore.Qt." + key + "Modifier" + ("|" if string[string.index(key) + 1] in mod_list else ",")
 			else:
-				final_stuff += "QtCore.Qt.Key_" + key + ("," if string.index(key) < len(string)-1 else ")")
+				final_stuff += "QtCore.Qt.Key_" + key + ")"
 	else:
 		final_stuff += "QtCore.Qt.Key_" + string
 	
 	return eval(final_stuff)
 	
 def make_to_string(QtKey):
-	return QtKey.name.replace("Key_","") if type(QtKey) == QtCore.Qt.Key else QtKey.keyboardModifiers().name.replace("Modifier","") + " + " + QtKey.key().name.replace("Key_","")
+	if type(QtKey) == QtCore.Qt.Key:
+		return QtKey.name.replace("Key_","")
+		
+	else:
+		result_str = QtKey.keyboardModifiers().name
+		if "|" in result_str:
+			result_str = result_str.replace("|"," + ")
+			
+		return result_str.replace("Modifier","") + " + " + QtKey.key().name.replace("Key_","")
 
 def settings_reader(in_put):
 	settings_strings = []
@@ -41,3 +48,4 @@ def settings_writer(settings_dict,output):
 	with open(output, "w") as out:
 		for key in settings_dict:
 			out.write(key + " : " + (str(settings_dict[key])  if type(settings_dict[key]) == float else make_to_string(settings_dict[key])) + "\n")
+			
