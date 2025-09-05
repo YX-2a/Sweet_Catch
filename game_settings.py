@@ -70,12 +70,51 @@ class ControlsTab(SettingsTab):
 			key = key.key()
 			
 		self.control_dict[the_control][0] = key
+		
 		for control in Game_Settings.all_controls:
 			if control[1] == self.control_dict[the_control][1]:
 				control[0] = self.control_dict[the_control][0]
-				Game_Settings.settings_dict[control[1]] = control[0]
 				break
 	
+	def tabAction(self):
+		for control in Game_Settings.all_controls:
+			Game_Settings.settings_dict[control[1]] = control[0]
+
+class SettingsDialog(QtWidgets.QDialog):
+	def __init__ (self, parent, child):
+		super().__init__(parent)
+		self.child = child
+		
+		self.resize (600,300)
+		self.vbox = QtWidgets.QVBoxLayout(self)
+		self.setWindowTitle (f"Settings - {self.child.tab_name}")
+		
+		self.vbox.addWidget(self.child)
+		self.bottom_buttons()
+	
+	def bottom_buttons (self):
+		self.frame_buttons = QtWidgets.QFrame()
+		self.frame_buttons.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+		self.frame_buttons.setFrameShape(QtWidgets.QFrame.StyledPanel)
+		
+		self.hbox_btns = QtWidgets.QHBoxLayout(self.frame_buttons)
+		self.confirm = QtWidgets.QPushButton("Confirm")
+		self.cancel = QtWidgets.QPushButton("Cancel")
+		
+		self.confirm.clicked.connect(self.confirm_settings)
+		self.cancel.clicked.connect(self.destroy)
+		
+		self.confirm.setSizePolicy(QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed)
+		self.cancel.setSizePolicy(QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed)
+
+		self.hbox_btns.addWidget(self.cancel, alignment=QtCore.Qt.AlignRight)
+		self.hbox_btns.addWidget(self.confirm)
+		self.vbox.addWidget (self.frame_buttons, alignment=QtCore.Qt.AlignBottom)
+
+	def confirm_settings(self):
+		self.child.tabAction()
+		self.destroy()
+		
 class SettingsWindow(QtWidgets.QDialog):
 	def __init__ (self, parent):
 		super().__init__(parent)

@@ -1,22 +1,8 @@
-## Volume ##
-Volume : 1.0
-
-## Controls ##
+Volume : 0.38
 Move Player Left : Left
 Move Player Right : Right
-Open Game Settings : Control + S
-New Game : Control + N
-Pause/Continue Game : Control + P
+Open Game Settings : P
+New Game : Shift + N
+Pause/Continue Game : Shift + P
 Quit Game : Control + Q
-About Game : Control + A
-
-
-#### Modifier List ####
-# Ctrl -> Control
-# Shift -> Shift
-# Win/Super -> Meta
-
-#### Keys List ####
-# a-z -> A-Z
-# Left Arrow -> Left
-# Rigth Arrow -> Right
+About Game : N
