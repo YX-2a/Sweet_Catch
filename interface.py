@@ -91,10 +91,10 @@ class Interface (QtWidgets.QWidget):
 		self.score.update ()
 		
 	def game_tick (self):
-		if (self.current_key == Game_Settings.player_left_k[0] and self.player_x > 0):
+		if (self.current_key == Game_Settings.all_controls_dict["Move Player Left"] and self.player_x > 0):
 			self.player_x -= self.player.speed
 			
-		elif (self.current_key == Game_Settings.player_right_k[0] and self.player_x < (self.scene.width() - 96)):
+		elif (self.current_key == Game_Settings.all_controls_dict["Move Player Right"] and self.player_x < (self.scene.width() - 96)):
 			self.player_x += self.player.speed
 			
 		self.player.setX(self.player_x)

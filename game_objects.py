@@ -47,10 +47,10 @@ class Game_Sound (QtMultimedia.QSoundEffect):
 		super().__init__()
 		self.setSource (QtCore.QUrl.fromLocalFile(filename))
 		self.setLoopCount (1)
-		self.setVolume (game_settings.Game_Settings.audio_vol)
+		self.setVolume (game_settings.Game_Settings.all_audio_dict["Volume"])
 
 	def update(self):
-		self.setVolume (game_settings.Game_Settings.audio_vol)
+		self.setVolume (game_settings.Game_Settings.all_audio_dict["Volume"])
 
 class Game_Text (QtWidgets.QGraphicsTextItem):
 	def __init__ (self):

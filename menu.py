@@ -19,7 +19,7 @@ class Menu (QtWidgets.QMenuBar):
 		self.settings = QtWidgets.QMenu ("Edit")
 		self.settings_set_act = self.settings.addAction ("Settings...")
 		self.settings.addSeparator ()
-		volume = self.settings.addAction ("Volume")
+		volume = self.settings.addAction ("Audio")
 		control = self.settings.addAction ("Controls")
 		
 		self.help = QtWidgets.QMenu ("Help")
@@ -42,11 +42,12 @@ class Menu (QtWidgets.QMenuBar):
 		return self
 	
 	def set_shortcuts(self):
-		self.game_new_act.setShortcut (game_settings.Game_Settings.game_new_act_k[0])
-		self.game_pause_act.setShortcut (game_settings.Game_Settings.game_pause_act_k[0])
-		self.settings_set_act.setShortcut (game_settings.Game_Settings.settings_set_act_k[0])
-		self.game_quit_act.setShortcut (game_settings.Game_Settings.game_quit_act_k[0])
-		self.help_about_act.setShortcut (game_settings.Game_Settings.help_about_act_k[0])
+		shortcuts = game_settings.Game_Settings.all_controls_dict
+		self.game_new_act.setShortcut (shortcuts["New Game"])
+		self.game_pause_act.setShortcut (shortcuts["Pause/Continue Game"])
+		self.settings_set_act.setShortcut (shortcuts["Open Game Settings"])
+		self.game_quit_act.setShortcut (shortcuts["Quit Game"])
+		self.help_about_act.setShortcut (shortcuts["About Game"])
 		
 	def about (self):
 		msg_box = QtWidgets.QMessageBox(self.parent)

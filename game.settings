@@ -1,8 +1,23 @@
-Volume : 0.38
+Audio:
+
+Volume : 1.0
+New Game : sounds/new_game.wav
+Pause/Continue Game : sounds/pause_game.wav
+Apple Hit : sounds/apple_hit.wav
+Lemon Hit : sounds/lemon_hit.wav
+Special Apple Hit : sounds/special_apple_hit.wav
+Special Lemon Hit : sounds/special_lemon_hit.wav
+Special Hit : sounds/special_hit.wav
+
+
+Controls:
+
 Move Player Left : Left
 Move Player Right : Right
-Open Game Settings : P
-New Game : Shift + N
-Pause/Continue Game : Shift + P
+Open Game Settings : Control + S
+New Game : Control + N
+Pause/Continue Game : Control + P
 Quit Game : Control + Q
-About Game : N
+About Game : Control + A
+
+
