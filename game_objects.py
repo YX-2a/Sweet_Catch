@@ -49,8 +49,10 @@ class Game_Sound (QtMultimedia.QSoundEffect):
 		self.setLoopCount (1)
 		self.setVolume (game_settings.Game_Settings.all_audio_dict["Volume"])
 
-	def update(self):
+	def update(self, fname=None):
 		self.setVolume (game_settings.Game_Settings.all_audio_dict["Volume"])
+		if fname:
+			self.setSource (QtCore.QUrl.fromLocalFile(fname))
 
 class Game_Text (QtWidgets.QGraphicsTextItem):
 	def __init__ (self):
@@ -110,7 +112,13 @@ class Faller (Game_Object):
 		if fname:
 			self.fname = fname
 			self.sound = Game_Sound(self.fname)
-			
+		else:
+			self.fname = ""
+			self.sound = None
+	
+	def updateSound(self):
+		if self.fname:
+			self.sound = Game_Sound(self.fname)
 		else:
 			self.sound = None
 	
@@ -120,15 +128,15 @@ class Apple (Faller):
 		self.type = "Apple"
 		self.score_add = 10
 		self.speed = 4
-		self.setSound("./sounds/apple_hit.wav")
-	
+		self.setSound(game_settings.Game_Settings.all_audio_dict["Apple Hit"])
+
 class Lemon (Faller):
 	def __init__ (self, img, sizeXY):
 		super().__init__( img, sizeXY )
 		self.type = "Lemon"
 		self.score_add = -10
 		self.speed = 3
-		self.setSound("./sounds/lemon_hit.wav")
+		self.setSound(game_settings.Game_Settings.all_audio_dict["Lemon Hit"])
 
 class Leaf (Faller):
 	def __init__ (self, img, sizeXY):
@@ -142,7 +150,7 @@ class Special (Faller):
 		self.type = "Special"
 		self.sub_type = "Generic"
 		self.speed = 5
-		self.setSound("./sounds/special_hit.wav")
+		self.setSound(game_settings.Game_Settings.all_audio_dict["Special Hit"])
 	
 	def __str__ (self):
 		return f"{self.type} [{self.sub_type}] Object : \nheight: {self.height}\nwidth: {self.width}\nx: {self.x()}\ny: {self.y()}\nspeed: {self.speed}\nscore add: {self.score_add}\n"

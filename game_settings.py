@@ -1,18 +1,11 @@
 from PySide6 import QtWidgets, QtCore, QtGui
+from os import path
 from settings_rw import settings_reader, settings_writer, make_to_string
 
 class Game_Settings:
 	settings_dict = settings_reader("game.settings")
 	all_controls_dict = settings_dict["Controls"]
 	all_audio_dict = settings_dict["Audio"]
-	#audio_vol = settings_dict["Volume"]
-	#player_left_k = [settings_dict["Move Player Left"], "Move Player Left"]
-	#player_right_k = [settings_dict["Move Player Right"], "Move Player Right"]
-	#settings_set_act_k = [settings_dict["Open Game Settings"], "Open Game Settings"]
-	#game_new_act_k = [settings_dict["New Game"], "New Game"]
-	#game_pause_act_k = [settings_dict["Pause/Continue Game"], "Pause/Continue Game"]
-	#game_quit_act_k = [settings_dict["Quit Game"], "Quit Game"]
-	#help_about_act_k = [settings_dict["About Game"], "About Game"]
 	
 class SettingsTab(QtWidgets.QWidget):
 	def __init__(self):
@@ -29,6 +22,7 @@ class AudioTab(SettingsTab):
 		self.vbox = QtWidgets.QVBoxLayout(self)
 		self.hbox_audio = QtWidgets.QHBoxLayout()
 		self.audio_buffer = Game_Settings.all_audio_dict.copy()
+		self.audio_buttons = {}
 		
 		self.audio_label = QtWidgets.QLabel("Volume : ")
 		self.audio_slider = QtWidgets.QSlider()
@@ -47,13 +41,26 @@ class AudioTab(SettingsTab):
 				audio_label = QtWidgets.QLabel(f"{audio} : ")
 				audio_button = QtWidgets.QPushButton(str(self.audio_buffer[audio]))
 				audio_button.setFixedSize(350, 22)
+				audio_button.clicked.connect(self.setPath)
+				
+				self.audio_buttons[audio_button] = audio_label
 				
 				hbox_audio.addWidget(audio_label, alignment=QtCore.Qt.AlignLeft)
 				hbox_audio.addWidget(audio_button, alignment=QtCore.Qt.AlignRight|QtCore.Qt.AlignTop)
 				self.vbox.addLayout (hbox_audio)
-
+				
+	def setPath(self):
+		fname = QtWidgets.QFileDialog.getOpenFileName(self,f"Set The {self.audio_buttons[self.sender()].text().replace(' : ','')} Audio File","", "Audio Files (*.mp3 *.wav *.ogg *.flac *.wma);;MP3 Audio (*.mp3);;WAV Audio (*.wav);;OGG Audio (*.ogg);;FLAC Audio (*.flac);;WMA Audio (*.wma)")
+		if fname[0]:
+			self.sender().setText(path.relpath(fname[0], "."))
+			self.audio_buffer[self.audio_buttons[self.sender()].text().replace(" : ","")] = self.sender().text()
+		else:
+			self.sender().setText("")
+			self.audio_buffer[self.audio_buttons[self.sender()].text().replace(" : ","")] = ""
+			
 	def tabAction(self):
-		Game_Settings.all_audio_dict["Volume"] = self.audio_slider.value() / 100
+		self.audio_buffer["Volume"] = self.audio_slider.value() / 100
+		Game_Settings.all_audio_dict = self.audio_buffer
 		Game_Settings.settings_dict["Audio"] = Game_Settings.all_audio_dict
 
 class ControlsTab(SettingsTab):

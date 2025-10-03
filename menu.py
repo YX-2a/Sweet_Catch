@@ -62,7 +62,7 @@ class Menu (QtWidgets.QMenuBar):
 			if self.parent.falling_obj_sound.isPlaying():
 				self.parent.falling_obj_sound.stop()
 		self.parent.start_game()
-		self.parent.stop_sound.update()
+		self.parent.stop_sound.update(game_settings.Game_Settings.all_audio_dict["Pause/Continue Game"])
 		self.parent.stop_sound.play()
 		self.game_pause_act.setText ("Pause")
 		self.game_pause_act.triggered.connect (self.pause)
@@ -73,7 +73,7 @@ class Menu (QtWidgets.QMenuBar):
 			if self.parent.falling_obj_sound.isPlaying():
 				self.parent.falling_obj_sound.stop()
 		self.parent.stop_game()
-		self.parent.stop_sound.update()
+		self.parent.stop_sound.update(game_settings.Game_Settings.all_audio_dict["Pause/Continue Game"])
 		self.parent.stop_sound.play()
 		self.game_pause_act.setText ("Continue")
 		self.game_pause_act.triggered.connect (self.unpause)

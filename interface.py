@@ -10,8 +10,8 @@ class Interface (QtWidgets.QWidget):
 		self.player_x = 0
 		self.player_y = 288
 
-		self.stop_sound = Game_Sound("./sounds/pause_game.wav")
-		self.start_sound = Game_Sound("./sounds/new_game.wav")
+		self.stop_sound = Game_Sound(Game_Settings.all_audio_dict["Pause/Continue Game"])
+		self.start_sound = Game_Sound(Game_Settings.all_audio_dict["New Game"])
 		self.blu_bg_color = QtGui.QColor(0, 181, 226)
 		self.red_bg_color = QtGui.QColor(255, 0, 0)
 		self.red_txt_color = QtGui.QColor (200, 0, 50, 255)
@@ -164,7 +164,7 @@ class Interface (QtWidgets.QWidget):
 					self.scene.addItem (self.underlay_text)
 				self.special_timer.start()
 			
-			if falling_obj.type != "Leaf":
+			if falling_obj.sound != None:
 				self.falling_obj_sound = self.collides_with_player[-1].sound
 				self.falling_obj_sound.update()
 				self.falling_obj_sound.play()
@@ -183,7 +183,8 @@ class Interface (QtWidgets.QWidget):
 		else:
 			if self.special_state:
 				self.special_efx_tick (falling_obj)
-
+				
+			falling_obj.updateSound()
 			falling_obj.setY (falling_obj.pos().y() + falling_obj.speed)
 			return falling_obj
 	
@@ -192,7 +193,7 @@ class Interface (QtWidgets.QWidget):
 			if obj.type == "Apple":
 				obj.setScoreAdd (50)
 				obj.setSpeed (5)
-				obj.setSound ("./sounds/special_apple_hit.wav")
+				obj.setSound (Game_Settings.all_audio_dict["Special Apple Hit"])
 				
 			elif obj.type == "Lemon":
 				obj.setScoreAdd (0)
@@ -206,7 +207,9 @@ class Interface (QtWidgets.QWidget):
 			elif obj.type == "Lemon":
 				obj.setScoreAdd (-50)
 				obj.setSpeed (6)
-				obj.setSound ("./sounds/special_lemon_hit.wav")
+				obj.setSound (Game_Settings.all_audio_dict["Special Lemon Hit"])
+			
+		obj.updateSound()
 	
 	def special_efx_stop (self):
 		self.special_type = None
@@ -225,12 +228,15 @@ class Interface (QtWidgets.QWidget):
 				if obj.type == "Apple":
 					obj.setScoreAdd (10)
 					obj.setSpeed (4)
-					obj.setSound ("./sounds/apple_hit.wav")
-				
+					obj.setSound (Game_Settings.all_audio_dict["Apple Hit"])
+					
 				elif obj.type == "Lemon":
 					obj.setScoreAdd (-10)
 					obj.setSpeed (3)
-					obj.setSound ("./sounds/lemon_hit.wav")
+					obj.setSound (Game_Settings.all_audio_dict["Lemon Hit"])
+				
+				obj.updateSound()
+		
 			self.falling_objs[i] = obj
 			
 	def stop_game (self):
@@ -280,6 +286,6 @@ class Interface (QtWidgets.QWidget):
 		self.score_num = 0
 		self.show_score(0)
 		
-		self.start_sound.update()
+		self.start_sound.update(Game_Settings.all_audio_dict["New Game"])
 		self.start_sound.play()
 		self.start_game()

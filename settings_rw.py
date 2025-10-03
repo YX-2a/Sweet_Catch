@@ -83,5 +83,5 @@ def settings_writer(settings_dict,output):
 			out.write(key + ":\n\n")
 			for lock in settings_dict[key]:
 				out.write(lock + " : " + str(make_to_string(settings_dict[key][lock]) if type(settings_dict[key][lock]) == QtCore.Qt.Key or type(settings_dict[key][lock]) == QtCore.QKeyCombination else settings_dict[key][lock]) + "\n")
-			
+				
 			out.write("\n\n")
