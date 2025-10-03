@@ -40,7 +40,6 @@ class AudioTab(SettingsTab):
 				hbox_audio = QtWidgets.QHBoxLayout()
 				audio_label = QtWidgets.QLabel(f"{audio} : ")
 				audio_button = QtWidgets.QPushButton(str(self.audio_buffer[audio]))
-				audio_button.setFixedSize(350, 22)
 				audio_button.clicked.connect(self.setPath)
 				
 				self.audio_buttons[audio_button] = audio_label
@@ -50,7 +49,7 @@ class AudioTab(SettingsTab):
 				self.vbox.addLayout (hbox_audio)
 				
 	def setPath(self):
-		fname = QtWidgets.QFileDialog.getOpenFileName(self,f"Set The {self.audio_buttons[self.sender()].text().replace(' : ','')} Audio File","", "Audio Files (*.mp3 *.wav *.ogg *.flac *.wma);;MP3 Audio (*.mp3);;WAV Audio (*.wav);;OGG Audio (*.ogg);;FLAC Audio (*.flac);;WMA Audio (*.wma)")
+		fname = QtWidgets.QFileDialog.getOpenFileName(self,f"Set The {self.audio_buttons[self.sender()].text().replace(' : ','')} Sound Effect","", "WAV Sound Effects (*.wav)")
 		if fname[0]:
 			self.sender().setText(path.relpath(fname[0], "."))
 			self.audio_buffer[self.audio_buttons[self.sender()].text().replace(" : ","")] = self.sender().text()
