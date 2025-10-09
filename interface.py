@@ -32,6 +32,7 @@ class Interface (QtWidgets.QWidget):
 		self.special_state = False
 		self.collides_with_player = []
 		self.special_type = None
+		self.paused = False
 		
 		self.current_key = None
 		self.score_num = 0
@@ -249,6 +250,8 @@ class Interface (QtWidgets.QWidget):
 			self.stop_box = self.scene.addRect(0, 0, self.scene.width(), self.scene.height(), QtGui.QPen(self.stop_color), QtGui.QBrush(self.stop_color))
 			self.stop_box.setZValue(2)
 		
+		self.paused = True
+		
 	def start_game (self):
 		self.game_timer.start()
 		if self.special_state:
@@ -257,6 +260,8 @@ class Interface (QtWidgets.QWidget):
 		if self.stop_box != None:
 			self.scene.removeItem (self.stop_box)
 			self.stop_box = None
+		
+		self.paused = False
 		
 	def reset_game (self):
 		self.game_timer.stop()
@@ -279,6 +284,7 @@ class Interface (QtWidgets.QWidget):
 				self.falling_obj_sound = None
 			
 		self.collides_with_player = []
+		self.paused = False
 		
 		self.player_x = 0
 		self.player.setPos (self.player_x, self.player_y)

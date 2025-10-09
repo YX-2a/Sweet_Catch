@@ -23,6 +23,7 @@ class Menu (QtWidgets.QMenuBar):
 		control = self.settings.addAction ("Controls")
 		
 		self.help = QtWidgets.QMenu ("Help")
+		self.help_h2play_act = self.help.addAction ("How To Play")
 		self.help_about_act = self.help.addAction ("About")
 		
 		self.set_shortcuts()
@@ -32,6 +33,7 @@ class Menu (QtWidgets.QMenuBar):
 		self.game_quit_act.triggered.connect (self.window.close)
 		self.settings_set_act.triggered.connect (self.set_diag)
 		self.help_about_act.triggered.connect (self.about)
+		self.help_h2play_act.triggered.connect (self.h2play)
 		volume.triggered.connect (self.volume_win)
 		control.triggered.connect (self.control_win)
 		
@@ -48,6 +50,13 @@ class Menu (QtWidgets.QMenuBar):
 		self.settings_set_act.setShortcut (shortcuts["Open Game Settings"])
 		self.game_quit_act.setShortcut (shortcuts["Quit Game"])
 		self.help_about_act.setShortcut (shortcuts["About Game"])
+	
+	def h2play(self):
+		msg_box = QtWidgets.QMessageBox(self.parent)
+		msg_box.setWindowTitle ("How To Play")
+		msg_box.setText ("# 	--- How To Play ---\n\n\n### You Go Left or Right and Catch the Sweet fruits and Avoid the Sour ones, and sometimes Yo get a Special Star !\n")
+		msg_box.setTextFormat (QtCore.Qt.MarkdownText)
+		msg_box.exec()
 		
 	def about (self):
 		msg_box = QtWidgets.QMessageBox(self.parent)
@@ -55,28 +64,30 @@ class Menu (QtWidgets.QMenuBar):
 		msg_box.setText ("# Sweet Catch\n\nJust a Beta for now.")
 		msg_box.setTextFormat (QtCore.Qt.MarkdownText)
 		msg_box.exec()
-	
+		
 	def unpause (self):
-		self.game_pause_act.triggered.disconnect()
-		if self.parent.falling_obj_sound:
-			if self.parent.falling_obj_sound.isPlaying():
-				self.parent.falling_obj_sound.stop()
-		self.parent.start_game()
-		self.parent.stop_sound.update(game_settings.Game_Settings.all_audio_dict["Pause/Continue Game"])
-		self.parent.stop_sound.play()
-		self.game_pause_act.setText ("Pause")
-		self.game_pause_act.triggered.connect (self.pause)
+		if self.parent.paused:
+			self.game_pause_act.triggered.disconnect()
+			if self.parent.falling_obj_sound:
+				if self.parent.falling_obj_sound.isPlaying():
+					self.parent.falling_obj_sound.stop()
+			self.parent.start_game()
+			self.parent.stop_sound.update(game_settings.Game_Settings.all_audio_dict["Pause/Continue Game"])
+			self.parent.stop_sound.play()
+			self.game_pause_act.setText ("Pause")
+			self.game_pause_act.triggered.connect (self.pause)
 		
 	def pause (self):
-		self.game_pause_act.triggered.disconnect()
-		if self.parent.falling_obj_sound:
-			if self.parent.falling_obj_sound.isPlaying():
-				self.parent.falling_obj_sound.stop()
-		self.parent.stop_game()
-		self.parent.stop_sound.update(game_settings.Game_Settings.all_audio_dict["Pause/Continue Game"])
-		self.parent.stop_sound.play()
-		self.game_pause_act.setText ("Continue")
-		self.game_pause_act.triggered.connect (self.unpause)
+		if self.parent.paused == False:
+			self.game_pause_act.triggered.disconnect()
+			if self.parent.falling_obj_sound:
+				if self.parent.falling_obj_sound.isPlaying():
+					self.parent.falling_obj_sound.stop()
+			self.parent.stop_game()
+			self.parent.stop_sound.update(game_settings.Game_Settings.all_audio_dict["Pause/Continue Game"])
+			self.parent.stop_sound.play()
+			self.game_pause_act.setText ("Continue")
+			self.game_pause_act.triggered.connect (self.unpause)
 
 	def set_diag(self):
 		settings_win = game_settings.SettingsWindow(self.parent)
