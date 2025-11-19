@@ -54,7 +54,7 @@ class Menu (QtWidgets.QMenuBar):
 	def h2play(self):
 		msg_box = QtWidgets.QMessageBox(self.parent)
 		msg_box.setWindowTitle ("How To Play")
-		msg_box.setText ("# 	--- How To Play ---\n\n\n### You Go Left or Right and Catch the Sweet fruits and Avoid the Sour ones, and sometimes Yo get a Special Star !\n")
+		msg_box.setText ("# 	    How To Play\n\n---\n### You Go Left or Right and Catch The Sweet Fruits And Avoid The Sour Ones, and Sometimes You Get a Special Star.\n")
 		msg_box.setTextFormat (QtCore.Qt.MarkdownText)
 		msg_box.exec()
 		
