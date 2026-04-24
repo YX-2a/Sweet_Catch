@@ -1,12 +1,15 @@
-from PySide6 import QtWidgets, QtCore, QtGui
+from PySide6 import QtWidgets, QtCore
 from os import path
-from settings_rw import settings_reader, settings_writer, make_to_string
+from settings_rw import settings_reader
 
 class Game_Settings:
-	settings_dict = settings_reader("game.settings")
-	all_controls_dict = settings_dict["Controls"]
-	all_audio_dict = settings_dict["Audio"]
-	
+	def __init__(self):
+		self.settings_dict = settings_reader("game.settings")
+		self.all_controls_dict = self.settings_dict["Controls"]
+		self.all_audio_dict = self.settings_dict["Audio"]
+
+game_settings = Game_Settings()
+
 class SettingsTab(QtWidgets.QWidget):
 	def __init__(self):
 		super().__init__()
@@ -21,7 +24,7 @@ class AudioTab(SettingsTab):
 		self.tab_name = "Audio"
 		self.vbox = QtWidgets.QVBoxLayout(self)
 		self.hbox_audio = QtWidgets.QHBoxLayout()
-		self.audio_buffer = Game_Settings.all_audio_dict.copy()
+		self.audio_buffer = game_settings.all_audio_dict.copy()
 		self.audio_buttons = {}
 		
 		self.audio_label = QtWidgets.QLabel("Volume : ")
@@ -59,15 +62,15 @@ class AudioTab(SettingsTab):
 			
 	def tabAction(self):
 		self.audio_buffer["Volume"] = self.audio_slider.value() / 100
-		Game_Settings.all_audio_dict = self.audio_buffer
-		Game_Settings.settings_dict["Audio"] = Game_Settings.all_audio_dict
+		game_settings.all_audio_dict = self.audio_buffer
+		game_settings.settings_dict["Audio"] = game_settings.all_audio_dict
 
 class ControlsTab(SettingsTab):
 	def __init__(self):
 		super().__init__()
 		self.tab_name = "Controls"
 		self.vbox = QtWidgets.QVBoxLayout(self)
-		self.controls_buffer = Game_Settings.all_controls_dict.copy()
+		self.controls_buffer = game_settings.all_controls_dict.copy()
 		self.control_dict = {}
 		
 		for control in self.controls_buffer:
@@ -93,8 +96,8 @@ class ControlsTab(SettingsTab):
 		self.controls_buffer[self.control_dict[the_control]] = key
 	
 	def tabAction(self):
-		Game_Settings.all_controls_dict = self.controls_buffer
-		Game_Settings.settings_dict["Controls"] = Game_Settings.all_controls_dict
+		game_settings.all_controls_dict = self.controls_buffer
+		game_settings.settings_dict["Controls"] = game_settings.all_controls_dict
 		
 class SettingsDialog(QtWidgets.QDialog):
 	def __init__ (self, parent, child):

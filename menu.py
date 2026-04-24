@@ -1,4 +1,5 @@
 from PySide6 import QtWidgets, QtCore
+from game_objects import Game_Sound_Index
 import game_settings
 
 class Menu (QtWidgets.QMenuBar):
@@ -44,7 +45,7 @@ class Menu (QtWidgets.QMenuBar):
 		return self
 	
 	def set_shortcuts(self):
-		shortcuts = game_settings.Game_Settings.all_controls_dict
+		shortcuts = game_settings.game_settings.all_controls_dict
 		self.game_new_act.setShortcut (shortcuts["New Game"])
 		self.game_pause_act.setShortcut (shortcuts["Pause/Continue Game"])
 		self.settings_set_act.setShortcut (shortcuts["Open Game Settings"])
@@ -68,24 +69,19 @@ class Menu (QtWidgets.QMenuBar):
 	def unpause (self):
 		if self.parent.paused:
 			self.game_pause_act.triggered.disconnect()
-			if self.parent.falling_obj_sound:
-				if self.parent.falling_obj_sound.isPlaying():
-					self.parent.falling_obj_sound.stop()
 			self.parent.start_game()
-			self.parent.stop_sound.update(game_settings.Game_Settings.all_audio_dict["Pause/Continue Game"])
-			self.parent.stop_sound.play()
+			self.parent.game_sounds.play_sound(Game_Sound_Index.G_PAUSE)
 			self.game_pause_act.setText ("Pause")
 			self.game_pause_act.triggered.connect (self.pause)
 		
 	def pause (self):
 		if self.parent.paused == False:
 			self.game_pause_act.triggered.disconnect()
-			if self.parent.falling_obj_sound:
-				if self.parent.falling_obj_sound.isPlaying():
-					self.parent.falling_obj_sound.stop()
+			if self.parent.falling_obj_sound != -1:
+				if self.parent.game_sounds.is_playing(self.parent.falling_obj_sound):
+					self.parent.game_sounds.stop_sound(self.parent.falling_obj_sound)
 			self.parent.stop_game()
-			self.parent.stop_sound.update(game_settings.Game_Settings.all_audio_dict["Pause/Continue Game"])
-			self.parent.stop_sound.play()
+			self.parent.game_sounds.play_sound(Game_Sound_Index.G_PAUSE)
 			self.game_pause_act.setText ("Continue")
 			self.game_pause_act.triggered.connect (self.unpause)
 
@@ -93,10 +89,12 @@ class Menu (QtWidgets.QMenuBar):
 		settings_win = game_settings.SettingsWindow(self.parent)
 		settings_win.exec()
 		self.set_shortcuts()
+		self.parent.game_sounds.update_sounds()
 	
 	def volume_win(self):
 		audio = game_settings.SettingsDialog(self.parent, game_settings.AudioTab())
 		audio.exec()
+		self.parent.game_sounds.update_sounds()
 	
 	def control_win(self):
 		control = game_settings.SettingsDialog(self.parent, game_settings.ControlsTab())

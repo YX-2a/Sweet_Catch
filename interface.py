@@ -1,8 +1,8 @@
 from PySide6 import QtWidgets, QtCore, QtGui
 from random import choice, randint
 
-from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound, Game_View, Game_Text
-from game_settings import Game_Settings
+from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound_Management, Game_Sound_Index, Game_View, Game_Text
+from game_settings import game_settings
 
 class Interface (QtWidgets.QWidget):
 	def __init__ (self):
@@ -10,8 +10,7 @@ class Interface (QtWidgets.QWidget):
 		self.player_x = 0
 		self.player_y = 288
 
-		self.stop_sound = Game_Sound(Game_Settings.all_audio_dict["Pause/Continue Game"])
-		self.start_sound = Game_Sound(Game_Settings.all_audio_dict["New Game"])
+		self.game_sounds = Game_Sound_Management()
 		self.blu_bg_color = QtGui.QColor(0, 181, 226)
 		self.red_bg_color = QtGui.QColor(255, 0, 0)
 		self.red_txt_color = QtGui.QColor (200, 0, 50, 255)
@@ -27,7 +26,7 @@ class Interface (QtWidgets.QWidget):
 		
 		self.falling_obj_coords = [i for i in range (0, 480, 48)]
 		self.falling_objs = [None for i in range(5)]
-		self.falling_obj_sound = None
+		self.falling_obj_sound = -1
 		self.stop_box = None
 		self.special_state = False
 		self.collides_with_player = []
@@ -92,14 +91,6 @@ class Interface (QtWidgets.QWidget):
 		self.score.update ()
 		
 	def game_tick (self):
-		if (self.current_key == Game_Settings.all_controls_dict["Move Player Left"] and self.player_x > 0):
-			self.player_x -= self.player.speed
-			
-		elif (self.current_key == Game_Settings.all_controls_dict["Move Player Right"] and self.player_x < (self.scene.width() - 96)):
-			self.player_x += self.player.speed
-			
-		self.player.setX(self.player_x)
-
 		if self.special_state:
 			if self.special_type == "Citrus":
 				if self.yel_txt_color.alpha() <= 0:
@@ -124,7 +115,15 @@ class Interface (QtWidgets.QWidget):
 		for index, falling_obj in enumerate(self.falling_objs):
 			fallen_obj = self.falling_obj_tick(falling_obj)
 			self.falling_objs[index] = fallen_obj
+
+		if (self.current_key == game_settings.all_controls_dict["Move Player Left"] and self.player_x > 0):
+			self.player_x -= self.player.speed
 			
+		elif (self.current_key == game_settings.all_controls_dict["Move Player Right"] and self.player_x < (self.scene.width() - 96)):
+			self.player_x += self.player.speed
+			
+		self.player.setX(self.player_x)
+
 	def falling_obj_tick (self, falling_obj):
 		if falling_obj == None:
 			self.collides_with_player = []
@@ -146,7 +145,7 @@ class Interface (QtWidgets.QWidget):
 		elif falling_obj.collidesWithItem(self.player):
 			self.collides_with_player.append(falling_obj)
 			
-			if falling_obj.type == "Special": 
+			if falling_obj.type == "Special":
 				self.special_type = falling_obj.sub_type
 				self.special_state = True
 				if self.special_type == "Citrus":
@@ -165,10 +164,11 @@ class Interface (QtWidgets.QWidget):
 					self.scene.addItem (self.underlay_text)
 				self.special_timer.start()
 			
-			if falling_obj.sound != None:
-				self.falling_obj_sound = self.collides_with_player[-1].sound
-				self.falling_obj_sound.update()
-				self.falling_obj_sound.play()
+			if falling_obj.s_index != -1:
+				self.falling_obj_sound = self.collides_with_player[-1].s_index
+				#print(f"Playing Sound : {self.game_sounds.all_sounds[self.falling_obj_sound]}, Vol : {self.game_sounds.all_sounds[self.falling_obj_sound].volume()}")
+				#print("More Info : ", self.game_sounds.all_sounds[self.falling_obj_sound].isLoaded(), self.game_sounds.all_sounds[self.falling_obj_sound].status())
+				self.game_sounds.play_sound(self.falling_obj_sound)
 
 			self.show_score(falling_obj.score_add)
 			self.scene.removeItem (falling_obj)
@@ -185,7 +185,7 @@ class Interface (QtWidgets.QWidget):
 			if self.special_state:
 				self.special_efx_tick (falling_obj)
 				
-			falling_obj.updateSound()
+			#falling_obj.updateSound()
 			falling_obj.setY (falling_obj.pos().y() + falling_obj.speed)
 			return falling_obj
 	
@@ -194,7 +194,7 @@ class Interface (QtWidgets.QWidget):
 			if obj.type == "Apple":
 				obj.setScoreAdd (50)
 				obj.setSpeed (5)
-				obj.setSound (Game_Settings.all_audio_dict["Special Apple Hit"])
+				obj.setSound (Game_Sound_Index.S_APPLE)
 				
 			elif obj.type == "Lemon":
 				obj.setScoreAdd (0)
@@ -208,9 +208,9 @@ class Interface (QtWidgets.QWidget):
 			elif obj.type == "Lemon":
 				obj.setScoreAdd (-50)
 				obj.setSpeed (6)
-				obj.setSound (Game_Settings.all_audio_dict["Special Lemon Hit"])
+				obj.setSound (Game_Sound_Index.S_LEMON)
 			
-		obj.updateSound()
+		#obj.updateSound()
 	
 	def special_efx_stop (self):
 		self.special_type = None
@@ -229,14 +229,14 @@ class Interface (QtWidgets.QWidget):
 				if obj.type == "Apple":
 					obj.setScoreAdd (10)
 					obj.setSpeed (4)
-					obj.setSound (Game_Settings.all_audio_dict["Apple Hit"])
+					obj.setSound (Game_Sound_Index.R_APPLE)
 					
 				elif obj.type == "Lemon":
 					obj.setScoreAdd (-10)
 					obj.setSpeed (3)
-					obj.setSound (Game_Settings.all_audio_dict["Lemon Hit"])
+					obj.setSound (Game_Sound_Index.R_LEMON)
 				
-				obj.updateSound()
+				#obj.updateSound()
 		
 			self.falling_objs[i] = obj
 			
@@ -279,9 +279,9 @@ class Interface (QtWidgets.QWidget):
 			self.special_efx_stop ()
 			
 		if self.falling_obj_sound:
-			if self.falling_obj_sound.isPlaying():
-				self.falling_obj_sound.stop()
-				self.falling_obj_sound = None
+			if self.game_sounds.is_playing(self.falling_obj_sound):
+				self.game_sounds.stop_sound(self.falling_obj_sound)
+			self.falling_obj_sound = None
 			
 		self.collides_with_player = []
 		self.paused = False
@@ -292,6 +292,5 @@ class Interface (QtWidgets.QWidget):
 		self.score_num = 0
 		self.show_score(0)
 		
-		self.start_sound.update(Game_Settings.all_audio_dict["New Game"])
-		self.start_sound.play()
+		self.game_sounds.play_sound(Game_Sound_Index.G_NEWRS)
 		self.start_game()
