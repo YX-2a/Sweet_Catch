@@ -1,5 +1,6 @@
 from PySide6 import QtWidgets, QtCore, QtGui
 from random import choice, randint
+import pygame.mixer
 
 from game_objects import Player, Apple, Lemon, Leaf, Pear, Citrus, Game_Sound_Management, Game_Sound_Index, Game_View, Game_Text
 from game_settings import game_settings
@@ -166,8 +167,6 @@ class Interface (QtWidgets.QWidget):
 			
 			if falling_obj.s_index != -1:
 				self.falling_obj_sound = self.collides_with_player[-1].s_index
-				print(f"Playing Sound : {self.game_sounds.all_sounds[self.falling_obj_sound]}, Vol : {self.game_sounds.all_sounds[self.falling_obj_sound].volume}")
-				print("More Info : ", self.game_sounds.is_loaded(self.falling_obj_sound), self.game_sounds.the_state(self.falling_obj_sound))
 				self.game_sounds.play_sound(self.falling_obj_sound)
 
 			self.show_score(falling_obj.score_add)
@@ -278,11 +277,8 @@ class Interface (QtWidgets.QWidget):
 			self.special_timer.stop()
 			self.special_efx_stop ()
 			
-		if self.falling_obj_sound:
-			if self.game_sounds.is_playing(self.falling_obj_sound):
-				self.game_sounds.stop_sound(self.falling_obj_sound)
-			self.falling_obj_sound = None
-			
+		pygame.mixer.stop()
+
 		self.collides_with_player = []
 		self.paused = False
 		

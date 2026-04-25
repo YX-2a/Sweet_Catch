@@ -1,4 +1,5 @@
 from PySide6 import QtWidgets, QtGui, QtCore, QtMultimedia
+from pygame.mixer import Sound
 import game_settings
 
 class Game_View (QtWidgets.QGraphicsView):
@@ -51,23 +52,17 @@ class Game_Sound_Index:
 	S_LEMON = 5
 	SPECIAL = 6
 
-class Game_Sound (QtMultimedia.QMediaPlayer):
+class Game_Sound (Sound):
 	def __init__ (self, filename):
-		super().__init__()
-		self.audio_output = QtMultimedia.QAudioOutput()
-		self.setAudioOutput(self.audio_output)
-		self.setSource (QtCore.QUrl.fromLocalFile(filename))
-		#self.setLoopCount (0)
-		self.audio_output.setVolume (game_settings.game_settings.all_audio_dict["Volume"])
+		super().__init__(filename)
+		self.set_volume (game_settings.game_settings.all_audio_dict["Volume"])
 
-	def update(self, fname=None):
-		self.audio_output.setVolume (game_settings.game_settings.all_audio_dict["Volume"])
-		if fname:
-			self.setSource (QtCore.QUrl.fromLocalFile(fname))
-	
+	def update(self):
+		self.set_volume (game_settings.game_settings.all_audio_dict["Volume"])
+
 	@property
 	def volume(self):
-		return game_settings.game_settings.all_audio_dict["Volume"]
+		return self.get_volume()
 
 class Game_Sound_Management:
 	def __init__(self):
@@ -84,27 +79,15 @@ class Game_Sound_Management:
 		self.all_sounds[Game_Sound_Index.SPECIAL] = Game_Sound(game_settings.game_settings.all_audio_dict["Special Hit"])
 	
 	def play_sound (self, index):
-		if self.is_playing(index):
-			self.stop_sound(index)
-		self.all_sounds[index].play()
+		if index > -1:
+			self.all_sounds[index].play()
 
 	def stop_sound (self, index):
-		self.all_sounds[index].stop()
-
-	def is_playing (self, index):
-		if index < -1:
-			return self.all_sounds[index].isPlaying()
-		
-	def is_loaded (self, index):
-		if index < -1:
-			return self.all_sounds[index].isLoaded()
-	
-	def the_state (self, index):
-		if index < -1:
-			return self.all_sounds[index].status()
+		if index > -1:
+			self.all_sounds[index].stop()
 
 	def the_sound (self, index):
-		if index < -1:
+		if index > -1:
 			return self.all_sounds[index]
 
 class Game_Text (QtWidgets.QGraphicsTextItem):

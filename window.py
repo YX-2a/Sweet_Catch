@@ -25,7 +25,7 @@ class Window (QMainWindow):
 		self.move_timer = QTimer(self)
 		self.move_timer.setInterval(250)
 		self.move_timer.setSingleShot(True)
-		self.move_timer.timeout.connect(self.inter.start_game)
+		self.move_timer.timeout.connect(self.menu.unpause)
 		
 	def moveEvent(self, e):
 		self.menu.pause()

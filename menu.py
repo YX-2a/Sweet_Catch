@@ -1,5 +1,6 @@
 from PySide6 import QtWidgets, QtCore
 from game_objects import Game_Sound_Index
+import pygame.mixer
 import game_settings
 
 class Menu (QtWidgets.QMenuBar):
@@ -70,6 +71,7 @@ class Menu (QtWidgets.QMenuBar):
 	def unpause (self):
 		if self.parent.paused:
 			self.game_pause_act.triggered.disconnect()
+			pygame.mixer.unpause()
 			self.parent.start_game()
 			self.parent.game_sounds.play_sound(Game_Sound_Index.G_PAUSE)
 			self.game_pause_act.setText ("Pause")
@@ -78,21 +80,21 @@ class Menu (QtWidgets.QMenuBar):
 	def pause (self):
 		if self.parent.paused == False:
 			self.game_pause_act.triggered.disconnect()
-			if self.parent.falling_obj_sound != -1:
-				if self.parent.game_sounds.is_playing(self.parent.falling_obj_sound):
-					self.parent.game_sounds.stop_sound(self.parent.falling_obj_sound)
-			self.parent.stop_game()
 			self.parent.game_sounds.play_sound(Game_Sound_Index.G_PAUSE)
+			self.parent.stop_game()
+			pygame.mixer.pause()
 			self.game_pause_act.setText ("Continue")
 			self.game_pause_act.triggered.connect (self.unpause)
 
 	def set_diag(self):
+		pygame.mixer.stop()
 		settings_win = game_settings.SettingsWindow(self.parent)
 		settings_win.exec()
 		self.set_shortcuts()
 		self.parent.game_sounds.update_sounds()
 	
 	def volume_win(self):
+		pygame.mixer.stop()
 		audio = game_settings.SettingsDialog(self.parent, game_settings.AudioTab())
 		audio.exec()
 		self.parent.game_sounds.update_sounds()
