@@ -166,8 +166,8 @@ class Interface (QtWidgets.QWidget):
 			
 			if falling_obj.s_index != -1:
 				self.falling_obj_sound = self.collides_with_player[-1].s_index
-				#print(f"Playing Sound : {self.game_sounds.all_sounds[self.falling_obj_sound]}, Vol : {self.game_sounds.all_sounds[self.falling_obj_sound].volume()}")
-				#print("More Info : ", self.game_sounds.all_sounds[self.falling_obj_sound].isLoaded(), self.game_sounds.all_sounds[self.falling_obj_sound].status())
+				print(f"Playing Sound : {self.game_sounds.all_sounds[self.falling_obj_sound]}, Vol : {self.game_sounds.all_sounds[self.falling_obj_sound].volume}")
+				print("More Info : ", self.game_sounds.is_loaded(self.falling_obj_sound), self.game_sounds.the_state(self.falling_obj_sound))
 				self.game_sounds.play_sound(self.falling_obj_sound)
 
 			self.show_score(falling_obj.score_add)

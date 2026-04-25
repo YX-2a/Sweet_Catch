@@ -64,6 +64,10 @@ class Game_Sound (QtMultimedia.QMediaPlayer):
 		self.audio_output.setVolume (game_settings.game_settings.all_audio_dict["Volume"])
 		if fname:
 			self.setSource (QtCore.QUrl.fromLocalFile(fname))
+	
+	@property
+	def volume(self):
+		return game_settings.game_settings.all_audio_dict["Volume"]
 
 class Game_Sound_Management:
 	def __init__(self):
@@ -88,7 +92,20 @@ class Game_Sound_Management:
 		self.all_sounds[index].stop()
 
 	def is_playing (self, index):
-		return self.all_sounds[index].isPlaying()
+		if index < -1:
+			return self.all_sounds[index].isPlaying()
+		
+	def is_loaded (self, index):
+		if index < -1:
+			return self.all_sounds[index].isLoaded()
+	
+	def the_state (self, index):
+		if index < -1:
+			return self.all_sounds[index].status()
+
+	def the_sound (self, index):
+		if index < -1:
+			return self.all_sounds[index]
 
 class Game_Text (QtWidgets.QGraphicsTextItem):
 	def __init__ (self):

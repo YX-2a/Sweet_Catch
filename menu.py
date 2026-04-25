@@ -28,6 +28,7 @@ class Menu (QtWidgets.QMenuBar):
 		self.help_about_act = self.help.addAction ("About")
 		
 		self.set_shortcuts()
+		self.parent.game_sounds.update_sounds()
 		
 		self.game_new_act.triggered.connect (self.parent.reset_game)
 		self.game_pause_act.triggered.connect (self.pause)
@@ -55,7 +56,7 @@ class Menu (QtWidgets.QMenuBar):
 	def h2play(self):
 		msg_box = QtWidgets.QMessageBox(self.parent)
 		msg_box.setWindowTitle ("How To Play")
-		msg_box.setText ("# 	    How To Play\n\n---\n### You Go Left or Right and Catch The Sweet Fruits And Avoid The Sour Ones, and Sometimes You Get a Special Star.\n")
+		msg_box.setText ("\t\t# How To Play\n\n---\n### You Go Left or Right and Catch The Sweet Fruits And Avoid The Sour Ones, and Sometimes You Get a Special Star.\n")
 		msg_box.setTextFormat (QtCore.Qt.MarkdownText)
 		msg_box.exec()
 		

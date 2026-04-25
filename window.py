@@ -16,8 +16,8 @@ class Window (QMainWindow):
 		self.inter = Interface()
 		self.setCentralWidget (self.inter.make())
 		
-		menu = Menu(self.inter, self)
-		self.setMenuBar (menu.make())
+		self.menu = Menu(self.inter, self)
+		self.setMenuBar (self.menu.make())
 
 		self.adjustSize()
 		self.setFixedSize(self.size())
@@ -28,20 +28,20 @@ class Window (QMainWindow):
 		self.move_timer.timeout.connect(self.inter.start_game)
 		
 	def moveEvent(self, e):
-		self.inter.stop_game()
+		self.menu.pause()
 		self.move_timer.start()
 		super().moveEvent(e)
 		
 	def changeEvent(self, e):
 		if e.type() == QEvent.WindowStateChange or e.type() == QEvent.ActivationChange:
 			if self.isMinimized():
-				self.inter.stop_game()
+				self.menu.pause()
 				
 			elif self.isActiveWindow():
-				self.inter.start_game()
+				self.menu.unpause()
 				
 			else:
-				self.inter.stop_game()
+				self.menu.pause()
 		
 		super().changeEvent(e)
 
