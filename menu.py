@@ -57,14 +57,14 @@ class Menu (QtWidgets.QMenuBar):
 	def h2play(self):
 		msg_box = QtWidgets.QMessageBox(self.parent)
 		msg_box.setWindowTitle ("How To Play")
-		msg_box.setText ("#\t\t How To Play\n---\n### You Go Left or Right and Catch The Sweet Fruits And Avoid The Sour Ones, and Sometimes You Get a Special Fruit that Gives You a Magical Effect !\n---\n")
+		msg_box.setText ("# How To Play\n---\nYou Go **Left** or **Right** and **Catch** The **Sweet** Fruits And Avoid The **Sour** Ones.\nSometimes You Get a **Special** Fruit that Gives You a **Magical** Effect !")
 		msg_box.setTextFormat (QtCore.Qt.MarkdownText)
 		msg_box.exec()
 		
 	def about (self):
 		msg_box = QtWidgets.QMessageBox(self.parent)
 		msg_box.setWindowTitle ("About")
-		msg_box.setText ("# Sweet Catch !\n\nA Game About Catching Fruits and Just Getting To High Score.  \nWith a Layout Inspired By Windows 3.x Games like Minesweeper by Microsoft, Missile Attack! by Peter Siamidis etc... but with Modern Widgets.  \nIt Relies on PySide6 for UI and Gameplay and it relies on Pygame.mixer For Sound (Found it the hardway that PySide6 doesn't have a good sound engine)  \n")
+		msg_box.setText ("# Sweet Catch !\n---\nA Game About Catching Fruits and Just Getting To High Score.  \nWith a Layout Inspired By Windows 3.x Games like Minesweeper by Microsoft, Missile Attack! by Peter Siamidis etc... but with Modern Widgets.  \nIt Relies on PySide6 for UI and Gameplay and it relies on Pygame.mixer For Sound (Found it the hardway that PySide6 doesn't have a good sound engine)  \n")
 		msg_box.setTextFormat (QtCore.Qt.MarkdownText)
 		msg_box.exec()
 		
