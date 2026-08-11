@@ -41,10 +41,17 @@ def build():
     if sys.platform == "win32":
         args += ["--windows-console-mode=disable","--output-filename=Sweet Catch.exe", f"--windows-icon-from-ico={groot / "leaf.ico"}"]
     else:
-        args += ["--output-filename=Sweet Catch", f"--linux-icon={groot / "textures/leaf.png"}"]
+        args += ["--output-filename=Sweet Catch", f"--linux-icon={groot / "leaf.ico"}"]
 
     subprocess.run(args,check=True)
 
 
 if __name__ == "__main__":
     build()
+    if (outpt / "main.onefile-build"):
+        shutil.rmtree(outpt / "main.onefile-build")
+    if (outpt / "main.dist"):
+        shutil.rmtree(outpt / "main.dist")
+    if (outpt / "main.build"):
+        shutil.rmtree(outpt / "main.build")
+    
