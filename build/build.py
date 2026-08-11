@@ -41,7 +41,7 @@ def build():
     if sys.platform == "win32":
         args += ["--windows-console-mode=disable","--output-filename=Sweet Catch.exe", f"--windows-icon-from-ico={groot / "leaf.ico"}"]
     else:
-        args += ["--output-filename=Sweet Catch", f"--linux-icon={groot / "leaf.ico"}"]
+        args += ["--output-filename=Sweet Catch", f"--linux-icon={groot / "textures/leaf.png"}"]
 
     subprocess.run(args,check=True)
 
