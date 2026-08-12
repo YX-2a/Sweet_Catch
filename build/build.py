@@ -8,6 +8,9 @@ lroot = Path(__file__).resolve().parent
 groot = lroot.resolve().parent
 outpt = groot / "output"
 
+def create_desktop():
+    with open(outpt / "sweet-catch.desktop", "w") as f:
+        f.write("[Desktop Entry]\nType=Application\nName=Sweet Catch\nExec=./Sweet\\ Catch\nIcon=leaf.png\nTerminal=false\nCategories=Entertainement;")
 
 def build():
     if outpt.exists():
@@ -47,11 +50,15 @@ def build():
 
 
 if __name__ == "__main__":
-    build()
-    if (outpt / "main.onefile-build"):
+    create_desktop()
+    #build()
+    if (outpt / "main.onefile-build").exists():
         shutil.rmtree(outpt / "main.onefile-build")
-    if (outpt / "main.dist"):
+    if (outpt / "main.dist").exists():
         shutil.rmtree(outpt / "main.dist")
-    if (outpt / "main.build"):
+    if (outpt / "main.build").exists():
         shutil.rmtree(outpt / "main.build")
-    
+
+    if sys.platform == "linux":
+        shutil.copy(groot / "textures/leaf.png",outpt / "leaf.png")
+        create_desktop()
