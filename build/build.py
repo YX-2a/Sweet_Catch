@@ -10,7 +10,7 @@ outpt = groot / "output"
 
 def create_desktop():
     with open(outpt / "sweet-catch.desktop", "w") as f:
-        f.write("[Desktop Entry]\nType=Application\nName=Sweet Catch\nExec=./Sweet\\ Catch\nIcon=leaf.png\nTerminal=false\nCategories=Entertainement;")
+        f.write("[Desktop Entry]\nType=Application\nName=Sweet Catch\nExec=./sweet-catch\nIcon=sweet-catch\nTerminal=false\nCategories=Entertainement;")
 
 def build():
     if outpt.exists():
@@ -42,9 +42,9 @@ def build():
     ]
 
     if sys.platform == "win32":
-        args += ["--windows-console-mode=disable","--output-filename=Sweet Catch.exe", f"--windows-icon-from-ico={groot / "leaf.ico"}"]
+        args += ["--windows-console-mode=disable","--output-filename=Sweet Catch.exe", f"--windows-icon-from-ico={groot / "icons/win32/leaf.ico"}"]
     else:
-        args += ["--output-filename=Sweet Catch", f"--linux-icon={groot / "leaf.ico"}"]
+        args += ["--output-filename=sweet-catch"]
 
     subprocess.run(args,check=True)
 
@@ -60,5 +60,5 @@ if __name__ == "__main__":
         shutil.rmtree(outpt / "main.build")
 
     if sys.platform == "linux":
-        shutil.copy(groot / "textures/leaf.png",outpt / "leaf.png")
+        shutil.coptree(groot / "icons/linux/hicolor",outpt / "icons/hicolor", dirs_exist_ok=True)
         create_desktop()
