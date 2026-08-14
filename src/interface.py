@@ -17,11 +17,6 @@ class Interface (QtWidgets.QWidget):
 		self.red_txt_color = QtGui.QColor (200, 0, 50, 255)
 		self.yel_bg_color = QtGui.QColor(255, 255, 50)
 		self.yel_txt_color = QtGui.QColor (250, 170, 0, 255)
-		self.player_img = QtGui.QImage ("./textures/basket.png")
-		self.apple_img = QtGui.QImage ("./textures/apple.png")
-		self.lemon_img = QtGui.QImage ("./textures/lemon.png")
-		self.leaf_img = QtGui.QImage ("./textures/leaf.png")
-		self.special_img = QtGui.QImage ("./textures/special.png")
 		self.stop_color = QtGui.QColor (127, 127, 127, 170)
 		self.underlay_text = Game_Text()
 		
@@ -72,7 +67,7 @@ class Interface (QtWidgets.QWidget):
 
 		self.vbox.addWidget (self.score)
 		
-		self.player = Player (self.player_img, (96,96))
+		self.player = Player ((96,96))
 		self.player.setPos (self.player_x, self.player_y)
 		self.player.setZValue(0.5)
 
@@ -129,11 +124,11 @@ class Interface (QtWidgets.QWidget):
 		if falling_obj == None:
 			self.collides_with_player = []
 			
-			falling_objs_classes = [Apple(self.apple_img, (48,48)), Lemon(self.lemon_img, (48,48)), Leaf(self.leaf_img, (48,48))] 
+			falling_objs_classes = [Apple((48,48)), Lemon((48,48)), Leaf((48,48))] 
 			falling_obj = choice(falling_objs_classes)
 			
 			if self.score_num % 100 == 0 and self.score_num > 0 and self.special_state == False:
-				falling_obj = choice([Pear(self.special_img, (48,48)), Citrus(self.special_img, (48,48))])
+				falling_obj = choice([Pear((48,48)), Citrus((48,48))])
 			
 			falling_obj_x = choice (self.falling_obj_coords)
 			self.scene.addItem (falling_obj)

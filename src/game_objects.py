@@ -1,4 +1,4 @@
-from PySide6 import QtWidgets, QtGui, QtCore, QtMultimedia
+from PySide6 import QtWidgets, QtGui
 from pygame.mixer import Sound
 import game_settings
 
@@ -11,6 +11,11 @@ class Game_View (QtWidgets.QGraphicsView):
 	
 	def keyReleaseEvent (self, e):
 		e.ignore()
+
+class Game_Sprite (QtGui.QImage):
+	def __init__(self, path):
+		super().__init__(path)
+		self.path = path
 
 class Game_Object (QtWidgets.QGraphicsPixmapItem):
 	def __init__ (self, img, sizeXY):
@@ -119,8 +124,8 @@ class Game_Text (QtWidgets.QGraphicsTextItem):
 		self.text_color = color
 
 class Player (Game_Object):
-	def __init__ (self, img, sizeXY):
-		super().__init__( img, sizeXY )
+	def __init__ (self, sizeXY):
+		super().__init__( game_settings.game_settings.all_textures_dict["Player"], sizeXY )
 		self.speed = 10
 		self.type = "Player"
 		
@@ -147,29 +152,29 @@ class Faller (Game_Object):
 		self.s_index = index
 
 class Apple (Faller):
-	def __init__ (self, img, sizeXY):
-		super().__init__( img, sizeXY )
+	def __init__ (self, sizeXY):
+		super().__init__( game_settings.game_settings.all_textures_dict["Apple"], sizeXY )
 		self.type = "Apple"
 		self.score_add = 10
 		self.speed = 4
 		self.setSound(Game_Sound_Index.R_APPLE)
 
 class Lemon (Faller):
-	def __init__ (self, img, sizeXY):
-		super().__init__( img, sizeXY )
+	def __init__ (self, sizeXY):
+		super().__init__( game_settings.game_settings.all_textures_dict["Lemon"], sizeXY )
 		self.type = "Lemon"
 		self.score_add = -10
 		self.speed = 3
 		self.setSound(Game_Sound_Index.R_LEMON)
 
 class Leaf (Faller):
-	def __init__ (self, img, sizeXY):
-		super().__init__( img, sizeXY )
+	def __init__ (self, sizeXY):
+		super().__init__( game_settings.game_settings.all_textures_dict["Leaf"], sizeXY )
 		self.type = "Leaf"
 		
 class Special (Faller):
-	def __init__ (self, img, sizeXY):
-		super().__init__( img, sizeXY )
+	def __init__ (self, sizeXY):
+		super().__init__( game_settings.game_settings.all_textures_dict["Special"], sizeXY )
 		self.type = "Special"
 		self.sub_type = "Generic"
 		self.speed = 5
@@ -182,11 +187,11 @@ class Special (Faller):
 		return self.__str__()
 	
 class Pear (Special):
-	def __init__ (self, img, sizeXY):
-		super().__init__( img, sizeXY )
+	def __init__ (self, sizeXY):
+		super().__init__( sizeXY )
 		self.sub_type = "Pear"
 		
 class Citrus (Special):
-	def __init__ (self, img, sizeXY):
-		super().__init__( img, sizeXY )
+	def __init__ (self, sizeXY):
+		super().__init__( sizeXY )
 		self.sub_type = "Citrus"

@@ -11,7 +11,7 @@ class Window (QMainWindow):
 	def __init__ (self):
 		super().__init__(parent = None, flags = Qt.WindowCloseButtonHint | Qt.WindowMinimizeButtonHint | Qt.WindowTitleHint)
 		self.setWindowTitle ("Sweet Catch")
-		self.setWindowIcon (QIcon("./textures/leaf.png"))
+		self.setWindowIcon (QIcon(game_settings.all_textures_dict["Leaf"].path))
 		
 		self.inter = Interface()
 		self.setCentralWidget (self.inter.make())

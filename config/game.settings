@@ -1,3 +1,6 @@
+Data_Dir : ../data/
+
+
 Audio:
 
 Volume : 1.0
@@ -10,6 +13,15 @@ Special Lemon Hit : sounds/special_lemon_hit.wav
 Special Hit : sounds/special_hit.wav
 
 
+Textures:
+
+Player : textures/basket.png
+Apple : textures/apple.png
+Lemon : textures/lemon.png
+Leaf : textures/leaf.png
+Special : textures/special.png
+
+
 Controls:
 
 Move Player Left : Left
@@ -19,5 +31,3 @@ New Game : Control + N
 Pause/Continue Game : Control + P
 Quit Game : Control + Q
 About Game : Control + A
-
-

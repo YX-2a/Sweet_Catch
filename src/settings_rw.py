@@ -1,4 +1,5 @@
-from PySide6 import QtCore
+from PySide6 import QtCore, QtGui
+from game_objects import Game_Sprite
 
 def isnum(string):
     try:
@@ -36,52 +37,48 @@ def make_to_string(QtKey):
 
 def settings_reader(in_put):
 	settings_strings = []
-	audio_strings = []
-	controls_strings = []
+	keys = {}
 	with open (in_put) as sett:
 		lines = sett.readlines()
 	
 	# To Remove Comments and White Space
-	lines = [i.strip() for i in lines]
-	lines = [(i if i else "#") for i in lines]
+	lines = [("#" if not i or i == "\n" else i) for i in lines]
 	lines = [(settings_strings.append(i) if "#" not in i else i ) for i in lines]
-	
-	in_audio = False
-	in_controls = False
-	
+
+	in_section = False
+	section_nm = ""
+
 	for i in settings_strings:
-		if "Audio:" in i:
-			in_audio = True
-			in_controls = False
-		
-		if "Controls:" in i:
-			in_audio = False
-			in_controls = True
-			
-		if in_audio:
-			audio_strings.append(i)
-		
-		elif in_controls:
-			controls_strings.append(i)
-	
-	controls_settings = {}
-	for j in controls_strings[1:]:
-		control = [j.strip() for j in j.split(":")]
-		controls_settings[control[0]] = make_to_QtKey(control[1])
-	
-	audio_settings = {}
-	for k in audio_strings[1:]:
-		audio = [k.strip() for k in k.split(":")]
-		audio_settings[audio[0]] = float(audio[1]) if isnum(audio[1]) else audio[1]
-	
-	settings = {audio_strings[0].replace(":",""):audio_settings,controls_strings[0].replace(":",""):controls_settings}
-	return settings
+		if ":\n" in i:
+			in_section = True
+			section_nm = i[:-2]
+			keys[section_nm] = {}
+		elif " : " in i:
+			knm = i.split(" : ")[0]
+			val = i.split(" : ")[1].strip()
+			if in_section:
+				if isnum(val):
+					keys[section_nm][knm] = float(val)
+
+				elif section_nm == "Controls":
+					keys[section_nm][knm] = make_to_QtKey(val)
+
+				elif section_nm == "Audio":
+					keys[section_nm][knm] = keys["Data_Dir"] + val
+
+				elif section_nm == "Textures":
+					keys[section_nm][knm] = Game_Sprite(keys["Data_Dir"] + val)
+			else:
+				in_section = False
+				keys[knm] = val
+	return keys
 	
 def settings_writer(settings_dict,output):
 	with open(output, "w") as out:
 		for key in settings_dict:
-			out.write(key + ":\n\n")
-			for lock in settings_dict[key]:
-				out.write(lock + " : " + str(make_to_string(settings_dict[key][lock]) if type(settings_dict[key][lock]) == QtCore.Qt.Key or type(settings_dict[key][lock]) == QtCore.QKeyCombination else settings_dict[key][lock]) + "\n")
-				
+			if type(settings_dict[key]) == dict:
+				for lock in settings_dict[key]:
+					out.write(lock + " : " + str(make_to_string(settings_dict[key][lock]) if type(settings_dict[key][lock]) == QtCore.Qt.Key or type(settings_dict[key][lock]) == QtCore.QKeyCombination else settings_dict[key][lock]) + "\n")
+			else:
+				out.write(key + " : " + settings_dict[key] + "\n")
 			out.write("\n\n")

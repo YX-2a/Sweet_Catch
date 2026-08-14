@@ -1,0 +1,29 @@
+Data_Dir : ../data/
+
+
+Volume : 1.0
+New Game : ../data/sounds/new_game.wav
+Pause/Continue Game : ../data/sounds/pause_game.wav
+Apple Hit : ../data/sounds/apple_hit.wav
+Lemon Hit : ../data/sounds/lemon_hit.wav
+Special Apple Hit : ../data/sounds/special_apple_hit.wav
+Special Lemon Hit : ../data/sounds/special_lemon_hit.wav
+Special Hit : ../data/sounds/special_hit.wav
+
+
+Player : <game_objects.Game_Sprite(QSize(32, 32),format=QImage::Format_ARGB32,depth=32,devicePixelRatio=1,bytesPerLine=128,sizeInBytes=4096) at 0x000001EEB429AC40>
+Apple : <game_objects.Game_Sprite(QSize(16, 16),format=QImage::Format_ARGB32,depth=32,devicePixelRatio=1,bytesPerLine=64,sizeInBytes=1024) at 0x000001EEB429AD00>
+Lemon : <game_objects.Game_Sprite(QSize(16, 16),format=QImage::Format_RGBA64,depth=64,devicePixelRatio=1,bytesPerLine=128,sizeInBytes=2048) at 0x000001EEB429AD80>
+Leaf : <game_objects.Game_Sprite(QSize(16, 16),format=QImage::Format_RGBA64,depth=64,devicePixelRatio=1,bytesPerLine=128,sizeInBytes=2048) at 0x000001EEB429AE00>
+Special : <game_objects.Game_Sprite(QSize(16, 16),format=QImage::Format_RGBA64,depth=64,devicePixelRatio=1,bytesPerLine=128,sizeInBytes=2048) at 0x000001EEB429AE80>
+
+
+Move Player Left : Left
+Move Player Right : Right
+Open Game Settings : Control + S
+New Game : Control + N
+Pause/Continue Game : Control + P
+Quit Game : Control + Q
+About Game : Control + A
+
+
