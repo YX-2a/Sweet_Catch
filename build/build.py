@@ -15,25 +15,26 @@ def create_desktop():
 def build():
     if outpt.exists():
         shutil.rmtree(outpt)
-
+    Path(outpt / "bin").mkdir(parents=True, exist_ok=True)
     args = [
             sys.executable,
             "-m",
             "nuitka",
     
-            str(groot / "main.py"),
-    
+            str(groot / "src" / "main.py"),
+
+            "--onefile-no-compression",
+
             "--mode=onefile",
             "--enable-plugin=pyside6",
     
             f"--output-dir={outpt}",    
-            f"--include-data-dir={groot / 'sounds'}=sounds",
-            f"--include-data-dir={groot / 'textures'}=textures",
-            f"--include-data-file={groot / 'game.settings'}=game.settings",
+            f"--include-data-dir={groot / "data"}=data",
+            f"--include-data-dir={groot / "config"}=config",
             
-            "--include-data-files-external=sounds/**",
-            "--include-data-files-external=textures/**",
-            "--include-data-files-external=game.settings",
+            "--include-data-files-external=data/textures/**",
+            "--include-data-files-external=data/sounds/**",
+            "--include-data-files-external=config/**",
 
             "--product-name=\"Sweet Catch\"",
             "--file-version=1.0",
@@ -42,16 +43,15 @@ def build():
     ]
 
     if sys.platform == "win32":
-        args += ["--windows-console-mode=disable","--output-filename=Sweet Catch.exe", f"--windows-icon-from-ico={groot / "icons/win32/leaf.ico"}"]
+        args += ["--windows-console-mode=disable",f"--output-filename={outpt / "bin/Sweet Catch.exe"}", f"--windows-icon-from-ico={groot / "data" / "icons/win32/leaf.ico"}"]
     else:
-        args += ["--output-filename=sweet-catch"]
+        args += [f"--output-filename={outpt / "bin/sweet-catch"}"]
 
     subprocess.run(args,check=True)
 
 
 if __name__ == "__main__":
-    create_desktop()
-    #build()
+    build()
     if (outpt / "main.onefile-build").exists():
         shutil.rmtree(outpt / "main.onefile-build")
     if (outpt / "main.dist").exists():
@@ -60,5 +60,5 @@ if __name__ == "__main__":
         shutil.rmtree(outpt / "main.build")
 
     if sys.platform == "linux":
-        shutil.coptree(groot / "icons/linux/hicolor",outpt / "icons/hicolor", dirs_exist_ok=True)
+        shutil.coptree(groot / "data" / "icons/linux/hicolor",outpt / "icons/hicolor", dirs_exist_ok=True)
         create_desktop()

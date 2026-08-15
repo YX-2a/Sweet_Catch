@@ -1,5 +1,6 @@
 from PySide6 import QtCore, QtGui
 from game_objects import Game_Sprite
+from pathlib import Path
 
 def isnum(string):
     try:
@@ -64,10 +65,16 @@ def settings_reader(in_put):
 					keys[section_nm][knm] = make_to_QtKey(val)
 
 				elif section_nm == "Audio":
-					keys[section_nm][knm] = keys["Data_Dir"] + val
+					if val.startswith("..") or val.startswith("/") or ":/" in val or ":\\" in val:
+						keys[section_nm][knm] = val
+					else:
+						keys[section_nm][knm] = keys["Data_Dir"] + val
 
 				elif section_nm == "Textures":
-					keys[section_nm][knm] = Game_Sprite(keys["Data_Dir"] + val)
+					if val.startswith("..") or val.startswith("/") or ":/" in val or ":\\" in val:
+						keys[section_nm][knm] = Game_Sprite(val)
+					else:
+						keys[section_nm][knm] = Game_Sprite(keys["Data_Dir"] + val)
 			else:
 				in_section = False
 				keys[knm] = val
@@ -77,8 +84,23 @@ def settings_writer(settings_dict,output):
 	with open(output, "w") as out:
 		for key in settings_dict:
 			if type(settings_dict[key]) == dict:
+				out.write(key + ":\n\n")
 				for lock in settings_dict[key]:
-					out.write(lock + " : " + str(make_to_string(settings_dict[key][lock]) if type(settings_dict[key][lock]) == QtCore.Qt.Key or type(settings_dict[key][lock]) == QtCore.QKeyCombination else settings_dict[key][lock]) + "\n")
+					value = settings_dict[key][lock]
+					if isinstance(value, (QtCore.Qt.Key, QtCore.QKeyCombination)):
+						out.write(lock + " : " + make_to_string(value) + "\n")
+
+					elif isinstance(value, Game_Sprite):
+						if str(value.path).replace("\\", "/").startswith(settings_dict["Data_Dir"]):
+							out.write(lock + " : " + (value.path).replace("\\", "/").replace(settings_dict["Data_Dir"],"") + "\n")
+						else:
+							out.write(lock + " : " + (value.path).replace("\\", "/") + "\n")
+
+					else:
+						if str(value).replace("\\", "/").startswith(settings_dict["Data_Dir"]):
+							out.write(lock + " : " + str(value).replace("\\", "/").replace(settings_dict["Data_Dir"],"") + "\n")
+						else:
+							out.write(lock + " : " + str(value).replace("\\", "/") + "\n")
 			else:
 				out.write(key + " : " + settings_dict[key] + "\n")
 			out.write("\n\n")

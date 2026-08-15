@@ -46,5 +46,5 @@ class Window (QMainWindow):
 		super().changeEvent(e)
 
 	def closeEvent (self, e):
-		settings_writer(game_settings.settings_dict, "game.settings")
+		settings_writer(game_settings.settings_dict, game_settings.settings_dir)
 		super().closeEvent(e)

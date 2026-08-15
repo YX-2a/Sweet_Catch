@@ -5,6 +5,7 @@ from settings_rw import settings_reader
 class Game_Settings:
 	def __init__(self):
 		self.settings_dict = settings_reader("../config/game.settings")
+		self.settings_dir  = "../config/game.settings"
 		self.all_controls_dict = self.settings_dict["Controls"]
 		self.all_textures_dict = self.settings_dict["Textures"]
 		self.all_audio_dict = self.settings_dict["Audio"]
